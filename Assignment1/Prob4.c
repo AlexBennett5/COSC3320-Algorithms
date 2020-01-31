@@ -18,8 +18,8 @@ int main(int argc, char *argv[] ) {
 	}
 
 	clock_t end1 = clock();
-	int time_elapsed = (double)(end1 - begin1) / CLOCKS_PER_SEC;
-	printf("Time elapsed for first allocation is %d seconds\n", time_elapsed);
+	int time_elapsed = (double)(end1 - begin1) /(CLOCKS_PER_SEC/1000);
+	printf("Time elapsed for first allocation is %d milliseconds\n", time_elapsed);
 
 	for (int i = 0; i < (3*m); i+= 2) {
 		free(arrs_800[i]);
@@ -35,8 +35,8 @@ int main(int argc, char *argv[] ) {
 	}
 
 	clock_t end2 = clock();
-	time_elapsed = (double)(end2 - begin2) / CLOCKS_PER_SEC;
-	printf("Time elapsed for first allocation is %d seconds\n", time_elapsed);
+	time_elapsed = (double)(end2 - begin2) / (CLOCKS_PER_SEC/1000);
+	printf("Time elapsed for first allocation is %d milliseconds\n", time_elapsed);
 
 
 }

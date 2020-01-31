@@ -24,15 +24,15 @@ int main(int argc, char *argv[]) {
 	quicksort(goodarr, 0, n - 1);
 	end1 = clock();
 
-	int time_elapsed = (double)(end1 - begin1)/CLOCKS_PER_SEC;
-	printf("It took %d seconds to quicksort the optimal array\n", time_elapsed);
+	int time_elapsed = (double)(end1 - begin1)/(CLOCKS_PER_SEC/1000);
+	printf("It took %d milliseconds to quicksort the optimal array\n", time_elapsed);
 	
 	begin2 = clock();
 	quicksort(badarr, 0, n - 1);
 	end2 = clock();
 
-	time_elapsed = (double)(end2 - begin2)/CLOCKS_PER_SEC;	
-	printf("It took %d seconds to quicksort the inefficient array\n", time_elapsed);
+	time_elapsed = (double)(end2 - begin2)/(CLOCKS_PER_SEC/1000);	
+	printf("It took %d milliseconds to quicksort the inefficient array\n", time_elapsed);
 
 	return 0;
 }
