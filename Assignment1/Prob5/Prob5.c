@@ -1,10 +1,10 @@
-
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
-int binarysearch(int arr[], int lo, int hi, int val);
+int binarysearch(int *arr, int lo, int hi, int val);
 void testarr(int size, int val);
-void manysearch(int arr[], int size, int val);
+void manysearch(int *arr, int size, int val);
 
 int main() {
 
@@ -19,7 +19,7 @@ int main() {
 
 }
 
-int binarysearch(int arr[], int lo, int hi, int val) {
+int binarysearch(int *arr, int lo, int hi, int val) {
 
 	while (lo <= hi) {
 		int mid = lo + (hi - lo)/2;
@@ -32,10 +32,11 @@ int binarysearch(int arr[], int lo, int hi, int val) {
 }
 
 void testarr(int size, int val) {
-	int arr[size];
+	int *arr = (int*)malloc(size*sizeof(int));
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < size; i++) {
 		arr[i] = val - 1;
+	}
 
 	clock_t begin = clock();	
 	manysearch(arr,size,val);
@@ -43,10 +44,11 @@ void testarr(int size, int val) {
 	int time_elapsed = (double) (end - begin)/(CLOCKS_PER_SEC/1000);
 
 	printf("The time it took for the array of size %d is %d milliseconds\n", size, time_elapsed);
-	
+
+	free(arr);
 }
 
-void manysearch(int arr[], int size, int val) {
+void manysearch(int *arr, int size, int val) {
 	int bound = 10000000;
 
 	for (int i = 0; i < bound; i++) 

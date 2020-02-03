@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -87,4 +86,3 @@ void swap(int arr[], int i, int j) {
 	arr[j] = temp;
 
 }
-

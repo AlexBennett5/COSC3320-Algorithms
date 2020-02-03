@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -36,7 +35,7 @@ int main(int argc, char *argv[] ) {
 
 	clock_t end2 = clock();
 	time_elapsed = (double)(end2 - begin2) / (CLOCKS_PER_SEC/1000);
-	printf("Time elapsed for first allocation is %d milliseconds\n", time_elapsed);
+	printf("Time elapsed for second allocation is %d milliseconds\n", time_elapsed);
 
 
 }
