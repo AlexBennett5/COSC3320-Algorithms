@@ -1,5 +1,14 @@
 \documentclass[11pt]{article}
-\usepackage{listings}
+\usepackage{amsmath}
+
+\usepackage{minted}
+\usepackage{xcolor}
+
+\usepackage{parskip}
+\usepackage{fancyvrb}
+
+\usepackage{multicol}
+\setlength{\columnsep}{1cm}
 
 \title{Assignment 1 - COSC 3320}
 \author{Alex Bennett (ID: 1901408)}
@@ -11,6 +20,1563 @@
 
 \section*{Problem 1}
 
+The task of this problem is to move $n$ disks of increasing size from one peg to another using a Tower of Hanoi graph. We have six pegs: START, DEST, and four AUX pegs. Once a disk is removed from START it cannot return and likewise once a disk is moved to DEST it cannot be moved back onto any of the others. The four AUX pegs form a looping cycle, with START and DEST connected to the same peg, AUX1. We want to know how many moves it will take to move the $n$ disks from the starting peg to the destination peg.
 
+Our algorithm works as follows: if $n$ is one, then we can simply move the disk from START to AUX1 to DEST in 2 moves. For $n$ greater than one we must move the top $n-1$ disks to somewhere in the cycle other than the AUX1 peg (for our purpose let's say we move it to AUX4 with a function called $H_{\text{START}}$). We then move the bottom disk from START to DEST. 
+
+Now that all remaining disks are in the cycle the problem is similar to a standard cyclic Tower of Hanoi problem, only with the DEST peg not included in the cycle. We will use a function $H_{\text{DEST}}$ that cycles the $k$ remaining disks from AUX4 to AUX1, moves the top $k-1$ disks back to AUX4, moves the bottom disk on AUX1 to DEST, and repeats. Both $H_{\text{START}}$ and $H_{\text{DEST}}$ require auxiliary functions $H_1, H_2, H_3$ where $H_i$ is a function to move a tower of $n$ disks $i$ spots ahead in the cycle.
+
+For $H_1, H_2, H_3$ we have the asymptotic upper bounds of $O(n3^n), O(3^n), O(n3^n)$ respectively. Our recursive definition for the start function is $H_{\text{START}}(n) = H_{\text{START}}(n-1) + H_2(n-1) + H_2(n-1)$ so $H_{\text{START}}(n) = O(n3^n)$. For $H_{\text{DEST}}$ we use a for-loop that repeatedly uses $H_1$ and $H_3$ so $H_{\text{DEST}} = O(n^23^n)$. For the entire algorithm, $H_T$, we have $H_T(n) = H_{\text{START}}(n-1) + H_{\text{DEST}}(1) + H_1(n-1) + H_{\text{DEST}}(n-1)$, which means the algorithm has a worst case time complexity of $O(n^23^n)$.
+
+The recursion depth for each constituent function of $H_T$ is $O(n)$ so the space complexity for the algorithm is $O(n)$.
+
+\subsection*{Source Code}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{Java}
+
+import java.io.PrintStream;
+import java.io.FileNotFoundException;
+import java.io.File;
+
+public class Prob1 {
+
+	public static void main(String[] args) throws FileNotFoundException {
+		PrintStream o = new PrintStream(new File("output.txt"));
+		PrintStream console = System.out;
+		System.setOut(o);
+		
+		try {
+			int n = Integer.parseInt(args[0]);
+			if (n > 0) {
+				System.out.println("Moves for " + n + " disks:\n" + "********************");
+				hanoi_total(n, "Aux1", "Aux2", "Aux3", "Aux4", 1);
+				System.out.println("********************");
+			} else {
+				System.out.println("Invalid input for n: n must be positive");
+			}
+
+		} catch (NumberFormatException nexc) {
+			System.setOut(console);
+			System.out.println("Number Format Exception: " + nexc.getMessage());			
+		}
+
+	}
+	
+	
+	
+	
+	// Move n disks 1 peg in cycle
+	public static int hanoi_1(int n, String A1, String A2, String A3, String A4, int movenum) {
+		if (n == 1) {
+			movenum = move(n, A1, A2, movenum);
+			return movenum;
+		} else {
+			movenum = hanoi_2(n-1, A1, A2, A3, A4, movenum);
+			movenum = move(n, A1, A2, movenum);
+			return hanoi_3(n-1, A3, A4, A1, A2, movenum);
+		}
+	}
+
+	// Move n disks 2 pegs in cycle
+	public static int hanoi_2(int n, String A1, String A2, String A3, String A4, int movenum) {
+		if (n == 1) {
+			movenum = move(n, A1, A2, movenum);
+			return move(n, A2, A3, movenum);
+		} else {
+			movenum = hanoi_2(n-1, A1, A2, A3, A4, movenum);
+			movenum = move(n, A1, A2, movenum);
+			movenum = hanoi_2(n-1, A3, A4, A1, A2, movenum);
+			movenum = move(n, A2, A3, movenum);
+			return hanoi_2(n-1, A1, A2, A3, A2, movenum);
+		}
+	}
+
+	// Move n disks 3 pegs in cycle
+	public static int hanoi_3(int n, String A1, String A2, String A3, String A4, int movenum) {
+		if (n == 1) {
+			movenum = move(n, A1, A2, movenum);
+			movenum = move(n, A2, A3, movenum);
+			return move(n, A3, A4, movenum);
+		} else {
+			movenum = hanoi_2(n-1, A1, A2, A3, A4, movenum);
+			movenum = move(n, A1, A2, movenum);
+			movenum = hanoi_2(n-1, A3, A4, A1, A2, movenum);
+			movenum = move(n, A1, A3, movenum);
+			movenum = move(n, A3, A4, movenum);
+			return hanoi_3(n-1, A1, A2, A3, A4, movenum);
+		}
+	}
+
+	// Move n disks from Start to A4
+	public static int hanoi_start(int n, String A1, String A2, String A3, String A4, int movenum) {
+		if (n == 1) {
+			movenum = move(n, "Start", A1, movenum);
+			movenum = move(n, A1, A2, movenum);
+			movenum = move(n, A2, A3, movenum);
+			return move(n, A3, A4, movenum);
+		} else {
+			movenum = hanoi_start(n-1, A1, A2, A3, A4, movenum);
+			movenum = move(n, "Start", A1, movenum);	
+			movenum = move(n, A1, A2, movenum);
+			movenum = move(n, A2, A3, movenum);
+			movenum = hanoi_2(n-1, A4, A1, A2, A3, movenum);
+			movenum = move(n, A3, A4, movenum);
+			return hanoi_2(n-1, A2, A3, A4, A1, movenum);
+		}
+	}
+
+	// Move n disks from A1 to Dest
+	public static int hanoi_dest(int n, String A1, String A2, String A3, String A4, int movenum) {
+		if (n == 1) {
+			return move(n, A1, "Dest", movenum);
+		} else {
+			for (int i = 0; i < n-1; i++) {
+				movenum = hanoi_3(n-1-i, A1, A2, A3, A4, movenum);
+				movenum = move(n-i, A1, "Dest", movenum);
+				movenum = hanoi_1(n-1-i, A4, A1, A2, A3, movenum);
+			}
+			return move(1, A1, "Dest", movenum);
+		}
+	}
+
+	// Move n disks from Start to Dest
+	public static int hanoi_total(int n, String A1, String A2, String A3, String A4, int movenum) {
+	       	if (n == 1) {
+	       		movenum = move(n, "Start", A1, movenum);
+	 		return move(n, A1, "Dest", movenum);
+		} else {
+			movenum = hanoi_start(n-1, A1, A2, A3, A4, movenum);
+			movenum = move(n, "Start", A1, movenum);
+			movenum = move(n, A1, "Dest", movenum);
+			movenum = hanoi_1(n-1, A4, A1, A2, A3, movenum);
+			movenum = hanoi_dest(n-1, A1, A2, A3, A4, movenum);
+			return movenum;
+		}
+	}
+
+	//Move a single disk to an adjacent peg
+	public static int move(int disk, String source, String dest, int movenum) {
+		System.out.println("Move " + movenum + ": Disk " + disk + " from " + source + " to " + dest);
+		return movenum + 1;
+	}
+
+}
+
+\end{minted}
+
+\subsection*{Output}
+
+\begin{multicols}{2}
+
+\subsubsection*{$n$ = 1}
+
+\begin{Verbatim}[fontsize=\small]
+Move 1: Disk 1 from Start to Aux1
+Move 2: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{$n$ = 2}
+
+\begin{Verbatim}[fontsize=\small]
+Move 1: Disk 1 from Start to Aux1
+Move 2: Disk 1 from Aux1 to Aux2
+Move 3: Disk 1 from Aux2 to Aux3
+Move 4: Disk 1 from Aux3 to Aux4
+Move 5: Disk 2 from Start to Aux1
+Move 6: Disk 2 from Aux1 to Dest
+Move 7: Disk 1 from Aux4 to Aux1
+Move 8: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{$n$ = 3}
+
+\begin{Verbatim}[fontsize=\small]
+Move 1: Disk 1 from Start to Aux1
+Move 2: Disk 1 from Aux1 to Aux2
+Move 3: Disk 1 from Aux2 to Aux3
+Move 4: Disk 1 from Aux3 to Aux4
+Move 5: Disk 2 from Start to Aux1
+Move 6: Disk 2 from Aux1 to Aux2
+Move 7: Disk 2 from Aux2 to Aux3
+Move 8: Disk 1 from Aux4 to Aux1
+Move 9: Disk 1 from Aux1 to Aux2
+Move 10: Disk 2 from Aux3 to Aux4
+Move 11: Disk 1 from Aux2 to Aux3
+Move 12: Disk 1 from Aux3 to Aux4
+Move 13: Disk 3 from Start to Aux1
+Move 14: Disk 3 from Aux1 to Dest
+Move 15: Disk 1 from Aux4 to Aux1
+Move 16: Disk 1 from Aux1 to Aux2
+Move 17: Disk 2 from Aux4 to Aux1
+Move 18: Disk 1 from Aux2 to Aux3
+Move 19: Disk 1 from Aux3 to Aux4
+Move 20: Disk 1 from Aux4 to Aux1
+Move 21: Disk 1 from Aux1 to Aux2
+Move 22: Disk 1 from Aux2 to Aux3
+Move 23: Disk 1 from Aux3 to Aux4
+Move 24: Disk 2 from Aux1 to Dest
+Move 25: Disk 1 from Aux4 to Aux1
+Move 26: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{$n$ = 4}
+
+\begin{Verbatim}[fontsize=\small]
+Move 1: Disk 1 from Start to Aux1
+Move 2: Disk 1 from Aux1 to Aux2
+Move 3: Disk 1 from Aux2 to Aux3
+Move 4: Disk 1 from Aux3 to Aux4
+Move 5: Disk 2 from Start to Aux1
+Move 6: Disk 2 from Aux1 to Aux2
+Move 7: Disk 2 from Aux2 to Aux3
+Move 8: Disk 1 from Aux4 to Aux1
+Move 9: Disk 1 from Aux1 to Aux2
+Move 10: Disk 2 from Aux3 to Aux4
+Move 11: Disk 1 from Aux2 to Aux3
+Move 12: Disk 1 from Aux3 to Aux4
+Move 13: Disk 3 from Start to Aux1
+Move 14: Disk 3 from Aux1 to Aux2
+Move 15: Disk 3 from Aux2 to Aux3
+Move 16: Disk 1 from Aux4 to Aux1
+Move 17: Disk 1 from Aux1 to Aux2
+Move 18: Disk 2 from Aux4 to Aux1
+Move 19: Disk 1 from Aux2 to Aux3
+Move 20: Disk 1 from Aux3 to Aux4
+Move 21: Disk 2 from Aux1 to Aux2
+Move 22: Disk 1 from Aux4 to Aux1
+Move 23: Disk 1 from Aux1 to Aux2
+Move 24: Disk 3 from Aux3 to Aux4
+Move 25: Disk 1 from Aux2 to Aux3
+Move 26: Disk 1 from Aux3 to Aux4
+Move 27: Disk 2 from Aux2 to Aux3
+Move 28: Disk 1 from Aux4 to Aux1
+Move 29: Disk 1 from Aux1 to Aux2
+Move 30: Disk 2 from Aux3 to Aux4
+Move 31: Disk 1 from Aux2 to Aux3
+Move 32: Disk 1 from Aux3 to Aux4
+Move 33: Disk 4 from Start to Aux1
+Move 34: Disk 4 from Aux1 to Dest
+Move 35: Disk 1 from Aux4 to Aux1
+Move 36: Disk 1 from Aux1 to Aux2
+Move 37: Disk 2 from Aux4 to Aux1
+Move 38: Disk 1 from Aux2 to Aux3
+Move 39: Disk 1 from Aux3 to Aux4
+Move 40: Disk 2 from Aux1 to Aux2
+Move 41: Disk 1 from Aux4 to Aux1
+Move 42: Disk 1 from Aux1 to Aux2
+Move 43: Disk 3 from Aux4 to Aux1
+Move 44: Disk 1 from Aux2 to Aux3
+Move 45: Disk 1 from Aux3 to Aux4
+Move 46: Disk 2 from Aux2 to Aux3
+Move 47: Disk 1 from Aux4 to Aux1
+Move 48: Disk 1 from Aux1 to Aux2
+Move 49: Disk 2 from Aux2 to Aux4
+Move 50: Disk 2 from Aux4 to Aux1
+Move 51: Disk 1 from Aux2 to Aux3
+Move 52: Disk 1 from Aux3 to Aux4
+Move 53: Disk 1 from Aux4 to Aux1
+Move 54: Disk 1 from Aux1 to Aux2
+Move 55: Disk 1 from Aux2 to Aux3
+Move 56: Disk 2 from Aux1 to Aux2
+Move 57: Disk 1 from Aux3 to Aux4
+Move 58: Disk 1 from Aux4 to Aux1
+Move 59: Disk 2 from Aux1 to Aux3
+Move 60: Disk 2 from Aux3 to Aux4
+Move 61: Disk 1 from Aux1 to Aux2
+Move 62: Disk 1 from Aux2 to Aux3
+Move 63: Disk 1 from Aux3 to Aux4
+Move 64: Disk 3 from Aux1 to Dest
+Move 65: Disk 1 from Aux4 to Aux1
+Move 66: Disk 1 from Aux1 to Aux2
+Move 67: Disk 2 from Aux4 to Aux1
+Move 68: Disk 1 from Aux2 to Aux3
+Move 69: Disk 1 from Aux3 to Aux4
+Move 70: Disk 1 from Aux4 to Aux1
+Move 71: Disk 1 from Aux1 to Aux2
+Move 72: Disk 1 from Aux2 to Aux3
+Move 73: Disk 1 from Aux3 to Aux4
+Move 74: Disk 2 from Aux1 to Dest
+Move 75: Disk 1 from Aux4 to Aux1
+Move 76: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{$n$ = 5}
+
+\begin{Verbatim}[fontsize=\small]
+Move 1: Disk 1 from Start to Aux1
+Move 2: Disk 1 from Aux1 to Aux2
+Move 3: Disk 1 from Aux2 to Aux3
+Move 4: Disk 1 from Aux3 to Aux4
+Move 5: Disk 2 from Start to Aux1
+Move 6: Disk 2 from Aux1 to Aux2
+Move 7: Disk 2 from Aux2 to Aux3
+Move 8: Disk 1 from Aux4 to Aux1
+Move 9: Disk 1 from Aux1 to Aux2
+Move 10: Disk 2 from Aux3 to Aux4
+Move 11: Disk 1 from Aux2 to Aux3
+Move 12: Disk 1 from Aux3 to Aux4
+Move 13: Disk 3 from Start to Aux1
+Move 14: Disk 3 from Aux1 to Aux2
+Move 15: Disk 3 from Aux2 to Aux3
+Move 16: Disk 1 from Aux4 to Aux1
+Move 17: Disk 1 from Aux1 to Aux2
+Move 18: Disk 2 from Aux4 to Aux1
+Move 19: Disk 1 from Aux2 to Aux3
+Move 20: Disk 1 from Aux3 to Aux4
+Move 21: Disk 2 from Aux1 to Aux2
+Move 22: Disk 1 from Aux4 to Aux1
+Move 23: Disk 1 from Aux1 to Aux2
+Move 24: Disk 3 from Aux3 to Aux4
+Move 25: Disk 1 from Aux2 to Aux3
+Move 26: Disk 1 from Aux3 to Aux4
+Move 27: Disk 2 from Aux2 to Aux3
+Move 28: Disk 1 from Aux4 to Aux1
+Move 29: Disk 1 from Aux1 to Aux2
+Move 30: Disk 2 from Aux3 to Aux4
+Move 31: Disk 1 from Aux2 to Aux3
+Move 32: Disk 1 from Aux3 to Aux4
+Move 33: Disk 4 from Start to Aux1
+Move 34: Disk 4 from Aux1 to Aux2
+Move 35: Disk 4 from Aux2 to Aux3
+Move 36: Disk 1 from Aux4 to Aux1
+Move 37: Disk 1 from Aux1 to Aux2
+Move 38: Disk 2 from Aux4 to Aux1
+Move 39: Disk 1 from Aux2 to Aux3
+Move 40: Disk 1 from Aux3 to Aux4
+Move 41: Disk 2 from Aux1 to Aux2
+Move 42: Disk 1 from Aux4 to Aux1
+Move 43: Disk 1 from Aux1 to Aux2
+Move 44: Disk 3 from Aux4 to Aux1
+Move 45: Disk 1 from Aux2 to Aux3
+Move 46: Disk 1 from Aux3 to Aux4
+Move 47: Disk 2 from Aux2 to Aux3
+Move 48: Disk 1 from Aux4 to Aux1
+Move 49: Disk 1 from Aux1 to Aux2
+Move 50: Disk 2 from Aux3 to Aux4
+Move 51: Disk 1 from Aux2 to Aux3
+Move 52: Disk 1 from Aux3 to Aux4
+Move 53: Disk 3 from Aux1 to Aux2
+Move 54: Disk 1 from Aux4 to Aux1
+Move 55: Disk 1 from Aux1 to Aux2
+Move 56: Disk 2 from Aux4 to Aux1
+Move 57: Disk 1 from Aux2 to Aux1
+Move 58: Disk 1 from Aux1 to Aux4
+Move 59: Disk 2 from Aux1 to Aux2
+Move 60: Disk 1 from Aux4 to Aux1
+Move 61: Disk 1 from Aux1 to Aux2
+Move 62: Disk 4 from Aux3 to Aux4
+Move 63: Disk 1 from Aux2 to Aux3
+Move 64: Disk 1 from Aux3 to Aux4
+Move 65: Disk 2 from Aux2 to Aux3
+Move 66: Disk 1 from Aux4 to Aux1
+Move 67: Disk 1 from Aux1 to Aux2
+Move 68: Disk 2 from Aux3 to Aux4
+Move 69: Disk 1 from Aux2 to Aux3
+Move 70: Disk 1 from Aux3 to Aux4
+Move 71: Disk 3 from Aux2 to Aux3
+Move 72: Disk 1 from Aux4 to Aux1
+Move 73: Disk 1 from Aux1 to Aux2
+Move 74: Disk 2 from Aux4 to Aux1
+Move 75: Disk 1 from Aux2 to Aux3
+Move 76: Disk 1 from Aux3 to Aux4
+Move 77: Disk 2 from Aux1 to Aux2
+Move 78: Disk 1 from Aux4 to Aux1
+Move 79: Disk 1 from Aux1 to Aux2
+Move 80: Disk 3 from Aux3 to Aux4
+Move 81: Disk 1 from Aux2 to Aux3
+Move 82: Disk 1 from Aux3 to Aux4
+Move 83: Disk 2 from Aux2 to Aux3
+Move 84: Disk 1 from Aux4 to Aux3
+Move 85: Disk 1 from Aux3 to Aux2
+Move 86: Disk 2 from Aux3 to Aux4
+Move 87: Disk 1 from Aux2 to Aux3
+Move 88: Disk 1 from Aux3 to Aux4
+Move 89: Disk 5 from Start to Aux1
+Move 90: Disk 5 from Aux1 to Dest
+Move 91: Disk 1 from Aux4 to Aux1
+Move 92: Disk 1 from Aux1 to Aux2
+Move 93: Disk 2 from Aux4 to Aux1
+Move 94: Disk 1 from Aux2 to Aux3
+Move 95: Disk 1 from Aux3 to Aux4
+Move 96: Disk 2 from Aux1 to Aux2
+Move 97: Disk 1 from Aux4 to Aux1
+Move 98: Disk 1 from Aux1 to Aux2
+Move 99: Disk 3 from Aux4 to Aux1
+Move 100: Disk 1 from Aux2 to Aux3
+Move 101: Disk 1 from Aux3 to Aux4
+Move 102: Disk 2 from Aux2 to Aux3
+Move 103: Disk 1 from Aux4 to Aux1
+Move 104: Disk 1 from Aux1 to Aux2
+Move 105: Disk 2 from Aux3 to Aux4
+Move 106: Disk 1 from Aux2 to Aux3
+Move 107: Disk 1 from Aux3 to Aux4
+Move 108: Disk 3 from Aux1 to Aux2
+Move 109: Disk 1 from Aux4 to Aux1
+Move 110: Disk 1 from Aux1 to Aux2
+Move 111: Disk 2 from Aux4 to Aux1
+Move 112: Disk 1 from Aux2 to Aux1
+Move 113: Disk 1 from Aux1 to Aux4
+Move 114: Disk 2 from Aux1 to Aux2
+Move 115: Disk 1 from Aux4 to Aux1
+Move 116: Disk 1 from Aux1 to Aux2
+Move 117: Disk 4 from Aux4 to Aux1
+Move 118: Disk 1 from Aux2 to Aux3
+Move 119: Disk 1 from Aux3 to Aux4
+Move 120: Disk 2 from Aux2 to Aux3
+Move 121: Disk 1 from Aux4 to Aux1
+Move 122: Disk 1 from Aux1 to Aux2
+Move 123: Disk 2 from Aux3 to Aux4
+Move 124: Disk 1 from Aux2 to Aux3
+Move 125: Disk 1 from Aux3 to Aux4
+Move 126: Disk 3 from Aux2 to Aux3
+Move 127: Disk 1 from Aux4 to Aux1
+Move 128: Disk 1 from Aux1 to Aux2
+Move 129: Disk 2 from Aux4 to Aux1
+Move 130: Disk 1 from Aux2 to Aux3
+Move 131: Disk 1 from Aux3 to Aux4
+Move 132: Disk 2 from Aux1 to Aux2
+Move 133: Disk 1 from Aux4 to Aux1
+Move 134: Disk 1 from Aux1 to Aux2
+Move 135: Disk 3 from Aux2 to Aux4
+Move 136: Disk 3 from Aux4 to Aux1
+Move 137: Disk 1 from Aux2 to Aux3
+Move 138: Disk 1 from Aux3 to Aux4
+Move 139: Disk 2 from Aux2 to Aux3
+Move 140: Disk 1 from Aux4 to Aux1
+Move 141: Disk 1 from Aux1 to Aux2
+Move 142: Disk 2 from Aux2 to Aux4
+Move 143: Disk 2 from Aux4 to Aux1
+Move 144: Disk 1 from Aux2 to Aux3
+Move 145: Disk 1 from Aux3 to Aux4
+Move 146: Disk 1 from Aux4 to Aux1
+Move 147: Disk 1 from Aux1 to Aux2
+Move 148: Disk 1 from Aux2 to Aux3
+Move 149: Disk 2 from Aux1 to Aux2
+Move 150: Disk 1 from Aux3 to Aux4
+Move 151: Disk 1 from Aux4 to Aux1
+Move 152: Disk 2 from Aux2 to Aux3
+Move 153: Disk 1 from Aux1 to Aux2
+Move 154: Disk 1 from Aux2 to Aux3
+Move 155: Disk 3 from Aux1 to Aux2
+Move 156: Disk 1 from Aux3 to Aux4
+Move 157: Disk 1 from Aux4 to Aux1
+Move 158: Disk 2 from Aux3 to Aux4
+Move 159: Disk 1 from Aux1 to Aux2
+Move 160: Disk 1 from Aux2 to Aux3
+Move 161: Disk 2 from Aux4 to Aux1
+Move 162: Disk 1 from Aux3 to Aux4
+Move 163: Disk 1 from Aux4 to Aux1
+Move 164: Disk 3 from Aux1 to Aux3
+Move 165: Disk 3 from Aux3 to Aux4
+Move 166: Disk 1 from Aux1 to Aux2
+Move 167: Disk 1 from Aux2 to Aux3
+Move 168: Disk 2 from Aux1 to Aux2
+Move 169: Disk 1 from Aux3 to Aux4
+Move 170: Disk 1 from Aux4 to Aux1
+Move 171: Disk 2 from Aux1 to Aux3
+Move 172: Disk 2 from Aux3 to Aux4
+Move 173: Disk 1 from Aux1 to Aux2
+Move 174: Disk 1 from Aux2 to Aux3
+Move 175: Disk 1 from Aux3 to Aux4
+Move 176: Disk 4 from Aux1 to Dest
+Move 177: Disk 1 from Aux4 to Aux1
+Move 178: Disk 1 from Aux1 to Aux2
+Move 179: Disk 2 from Aux4 to Aux1
+Move 180: Disk 1 from Aux2 to Aux3
+Move 181: Disk 1 from Aux3 to Aux4
+Move 182: Disk 2 from Aux1 to Aux2
+Move 183: Disk 1 from Aux4 to Aux1
+Move 184: Disk 1 from Aux1 to Aux2
+Move 185: Disk 3 from Aux4 to Aux1
+Move 186: Disk 1 from Aux2 to Aux3
+Move 187: Disk 1 from Aux3 to Aux4
+Move 188: Disk 2 from Aux2 to Aux3
+Move 189: Disk 1 from Aux4 to Aux1
+Move 190: Disk 1 from Aux1 to Aux2
+Move 191: Disk 2 from Aux2 to Aux4
+Move 192: Disk 2 from Aux4 to Aux1
+Move 193: Disk 1 from Aux2 to Aux3
+Move 194: Disk 1 from Aux3 to Aux4
+Move 195: Disk 1 from Aux4 to Aux1
+Move 196: Disk 1 from Aux1 to Aux2
+Move 197: Disk 1 from Aux2 to Aux3
+Move 198: Disk 2 from Aux1 to Aux2
+Move 199: Disk 1 from Aux3 to Aux4
+Move 200: Disk 1 from Aux4 to Aux1
+Move 201: Disk 2 from Aux1 to Aux3
+Move 202: Disk 2 from Aux3 to Aux4
+Move 203: Disk 1 from Aux1 to Aux2
+Move 204: Disk 1 from Aux2 to Aux3
+Move 205: Disk 1 from Aux3 to Aux4
+Move 206: Disk 3 from Aux1 to Dest
+Move 207: Disk 1 from Aux4 to Aux1
+Move 208: Disk 1 from Aux1 to Aux2
+Move 209: Disk 2 from Aux4 to Aux1
+Move 210: Disk 1 from Aux2 to Aux3
+Move 211: Disk 1 from Aux3 to Aux4
+Move 212: Disk 1 from Aux4 to Aux1
+Move 213: Disk 1 from Aux1 to Aux2
+Move 214: Disk 1 from Aux2 to Aux3
+Move 215: Disk 1 from Aux3 to Aux4
+Move 216: Disk 2 from Aux1 to Dest
+Move 217: Disk 1 from Aux4 to Aux1
+Move 218: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{First 100 moves for $n > 5$}
+
+\begin{Verbatim}[fontsize=\small]
+Move 1: Disk 1 from Start to Aux1
+Move 2: Disk 1 from Aux1 to Aux2
+Move 3: Disk 1 from Aux2 to Aux3
+Move 4: Disk 1 from Aux3 to Aux4
+Move 5: Disk 2 from Start to Aux1
+Move 6: Disk 2 from Aux1 to Aux2
+Move 7: Disk 2 from Aux2 to Aux3
+Move 8: Disk 1 from Aux4 to Aux1
+Move 9: Disk 1 from Aux1 to Aux2
+Move 10: Disk 2 from Aux3 to Aux4
+Move 11: Disk 1 from Aux2 to Aux3
+Move 12: Disk 1 from Aux3 to Aux4
+Move 13: Disk 3 from Start to Aux1
+Move 14: Disk 3 from Aux1 to Aux2
+Move 15: Disk 3 from Aux2 to Aux3
+Move 16: Disk 1 from Aux4 to Aux1
+Move 17: Disk 1 from Aux1 to Aux2
+Move 18: Disk 2 from Aux4 to Aux1
+Move 19: Disk 1 from Aux2 to Aux3
+Move 20: Disk 1 from Aux3 to Aux4
+Move 21: Disk 2 from Aux1 to Aux2
+Move 22: Disk 1 from Aux4 to Aux1
+Move 23: Disk 1 from Aux1 to Aux2
+Move 24: Disk 3 from Aux3 to Aux4
+Move 25: Disk 1 from Aux2 to Aux3
+Move 26: Disk 1 from Aux3 to Aux4
+Move 27: Disk 2 from Aux2 to Aux3
+Move 28: Disk 1 from Aux4 to Aux1
+Move 29: Disk 1 from Aux1 to Aux2
+Move 30: Disk 2 from Aux3 to Aux4
+Move 31: Disk 1 from Aux2 to Aux3
+Move 32: Disk 1 from Aux3 to Aux4
+Move 33: Disk 4 from Start to Aux1
+Move 34: Disk 4 from Aux1 to Aux2
+Move 35: Disk 4 from Aux2 to Aux3
+Move 36: Disk 1 from Aux4 to Aux1
+Move 37: Disk 1 from Aux1 to Aux2
+Move 38: Disk 2 from Aux4 to Aux1
+Move 39: Disk 1 from Aux2 to Aux3
+Move 40: Disk 1 from Aux3 to Aux4
+Move 41: Disk 2 from Aux1 to Aux2
+Move 42: Disk 1 from Aux4 to Aux1
+Move 43: Disk 1 from Aux1 to Aux2
+Move 44: Disk 3 from Aux4 to Aux1
+Move 45: Disk 1 from Aux2 to Aux3
+Move 46: Disk 1 from Aux3 to Aux4
+Move 47: Disk 2 from Aux2 to Aux3
+Move 48: Disk 1 from Aux4 to Aux1
+Move 49: Disk 1 from Aux1 to Aux2
+Move 50: Disk 2 from Aux3 to Aux4
+Move 51: Disk 1 from Aux2 to Aux3
+Move 52: Disk 1 from Aux3 to Aux4
+Move 53: Disk 3 from Aux1 to Aux2
+Move 54: Disk 1 from Aux4 to Aux1
+Move 55: Disk 1 from Aux1 to Aux2
+Move 56: Disk 2 from Aux4 to Aux1
+Move 57: Disk 1 from Aux2 to Aux1
+Move 58: Disk 1 from Aux1 to Aux4
+Move 59: Disk 2 from Aux1 to Aux2
+Move 60: Disk 1 from Aux4 to Aux1
+Move 61: Disk 1 from Aux1 to Aux2
+Move 62: Disk 4 from Aux3 to Aux4
+Move 63: Disk 1 from Aux2 to Aux3
+Move 64: Disk 1 from Aux3 to Aux4
+Move 65: Disk 2 from Aux2 to Aux3
+Move 66: Disk 1 from Aux4 to Aux1
+Move 67: Disk 1 from Aux1 to Aux2
+Move 68: Disk 2 from Aux3 to Aux4
+Move 69: Disk 1 from Aux2 to Aux3
+Move 70: Disk 1 from Aux3 to Aux4
+Move 71: Disk 3 from Aux2 to Aux3
+Move 72: Disk 1 from Aux4 to Aux1
+Move 73: Disk 1 from Aux1 to Aux2
+Move 74: Disk 2 from Aux4 to Aux1
+Move 75: Disk 1 from Aux2 to Aux3
+Move 76: Disk 1 from Aux3 to Aux4
+Move 77: Disk 2 from Aux1 to Aux2
+Move 78: Disk 1 from Aux4 to Aux1
+Move 79: Disk 1 from Aux1 to Aux2
+Move 80: Disk 3 from Aux3 to Aux4
+Move 81: Disk 1 from Aux2 to Aux3
+Move 82: Disk 1 from Aux3 to Aux4
+Move 83: Disk 2 from Aux2 to Aux3
+Move 84: Disk 1 from Aux4 to Aux3
+Move 85: Disk 1 from Aux3 to Aux2
+Move 86: Disk 2 from Aux3 to Aux4
+Move 87: Disk 1 from Aux2 to Aux3
+Move 88: Disk 1 from Aux3 to Aux4
+Move 89: Disk 5 from Start to Aux1
+Move 90: Disk 5 from Aux1 to Aux2
+Move 91: Disk 5 from Aux2 to Aux3
+Move 92: Disk 1 from Aux4 to Aux1
+Move 93: Disk 1 from Aux1 to Aux2
+Move 94: Disk 2 from Aux4 to Aux1
+Move 95: Disk 1 from Aux2 to Aux3
+Move 96: Disk 1 from Aux3 to Aux4
+Move 97: Disk 2 from Aux1 to Aux2
+Move 98: Disk 1 from Aux4 to Aux1
+Move 99: Disk 1 from Aux1 to Aux2
+Move 100: Disk 3 from Aux4 to Aux1
+\end{Verbatim}
+
+\subsubsection*{Last 100 moves for $n$ = 6}
+
+\begin{Verbatim}[fontsize=\small]
+Move 532: Disk 1 from Aux2 to Aux3
+Move 533: Disk 1 from Aux3 to Aux4
+Move 534: Disk 2 from Aux2 to Aux3
+Move 535: Disk 1 from Aux4 to Aux1
+Move 536: Disk 1 from Aux1 to Aux2
+Move 537: Disk 2 from Aux3 to Aux4
+Move 538: Disk 1 from Aux2 to Aux3
+Move 539: Disk 1 from Aux3 to Aux4
+Move 540: Disk 3 from Aux2 to Aux3
+Move 541: Disk 1 from Aux4 to Aux1
+Move 542: Disk 1 from Aux1 to Aux2
+Move 543: Disk 2 from Aux4 to Aux1
+Move 544: Disk 1 from Aux2 to Aux3
+Move 545: Disk 1 from Aux3 to Aux4
+Move 546: Disk 2 from Aux1 to Aux2
+Move 547: Disk 1 from Aux4 to Aux1
+Move 548: Disk 1 from Aux1 to Aux2
+Move 549: Disk 3 from Aux2 to Aux4
+Move 550: Disk 3 from Aux4 to Aux1
+Move 551: Disk 1 from Aux2 to Aux3
+Move 552: Disk 1 from Aux3 to Aux4
+Move 553: Disk 2 from Aux2 to Aux3
+Move 554: Disk 1 from Aux4 to Aux1
+Move 555: Disk 1 from Aux1 to Aux2
+Move 556: Disk 2 from Aux2 to Aux4
+Move 557: Disk 2 from Aux4 to Aux1
+Move 558: Disk 1 from Aux2 to Aux3
+Move 559: Disk 1 from Aux3 to Aux4
+Move 560: Disk 1 from Aux4 to Aux1
+Move 561: Disk 1 from Aux1 to Aux2
+Move 562: Disk 1 from Aux2 to Aux3
+Move 563: Disk 2 from Aux1 to Aux2
+Move 564: Disk 1 from Aux3 to Aux4
+Move 565: Disk 1 from Aux4 to Aux1
+Move 566: Disk 2 from Aux2 to Aux3
+Move 567: Disk 1 from Aux1 to Aux2
+Move 568: Disk 1 from Aux2 to Aux3
+Move 569: Disk 3 from Aux1 to Aux2
+Move 570: Disk 1 from Aux3 to Aux4
+Move 571: Disk 1 from Aux4 to Aux1
+Move 572: Disk 2 from Aux3 to Aux4
+Move 573: Disk 1 from Aux1 to Aux2
+Move 574: Disk 1 from Aux2 to Aux3
+Move 575: Disk 2 from Aux4 to Aux1
+Move 576: Disk 1 from Aux3 to Aux4
+Move 577: Disk 1 from Aux4 to Aux1
+Move 578: Disk 3 from Aux1 to Aux3
+Move 579: Disk 3 from Aux3 to Aux4
+Move 580: Disk 1 from Aux1 to Aux2
+Move 581: Disk 1 from Aux2 to Aux3
+Move 582: Disk 2 from Aux1 to Aux2
+Move 583: Disk 1 from Aux3 to Aux4
+Move 584: Disk 1 from Aux4 to Aux1
+Move 585: Disk 2 from Aux1 to Aux3
+Move 586: Disk 2 from Aux3 to Aux4
+Move 587: Disk 1 from Aux1 to Aux2
+Move 588: Disk 1 from Aux2 to Aux3
+Move 589: Disk 1 from Aux3 to Aux4
+Move 590: Disk 4 from Aux1 to Dest
+Move 591: Disk 1 from Aux4 to Aux1
+Move 592: Disk 1 from Aux1 to Aux2
+Move 593: Disk 2 from Aux4 to Aux1
+Move 594: Disk 1 from Aux2 to Aux3
+Move 595: Disk 1 from Aux3 to Aux4
+Move 596: Disk 2 from Aux1 to Aux2
+Move 597: Disk 1 from Aux4 to Aux1
+Move 598: Disk 1 from Aux1 to Aux2
+Move 599: Disk 3 from Aux4 to Aux1
+Move 600: Disk 1 from Aux2 to Aux3
+Move 601: Disk 1 from Aux3 to Aux4
+Move 602: Disk 2 from Aux2 to Aux3
+Move 603: Disk 1 from Aux4 to Aux1
+Move 604: Disk 1 from Aux1 to Aux2
+Move 605: Disk 2 from Aux2 to Aux4
+Move 606: Disk 2 from Aux4 to Aux1
+Move 607: Disk 1 from Aux2 to Aux3
+Move 608: Disk 1 from Aux3 to Aux4
+Move 609: Disk 1 from Aux4 to Aux1
+Move 610: Disk 1 from Aux1 to Aux2
+Move 611: Disk 1 from Aux2 to Aux3
+Move 612: Disk 2 from Aux1 to Aux2
+Move 613: Disk 1 from Aux3 to Aux4
+Move 614: Disk 1 from Aux4 to Aux1
+Move 615: Disk 2 from Aux1 to Aux3
+Move 616: Disk 2 from Aux3 to Aux4
+Move 617: Disk 1 from Aux1 to Aux2
+Move 618: Disk 1 from Aux2 to Aux3
+Move 619: Disk 1 from Aux3 to Aux4
+Move 620: Disk 3 from Aux1 to Dest
+Move 621: Disk 1 from Aux4 to Aux1
+Move 622: Disk 1 from Aux1 to Aux2
+Move 623: Disk 2 from Aux4 to Aux1
+Move 624: Disk 1 from Aux2 to Aux3
+Move 625: Disk 1 from Aux3 to Aux4
+Move 626: Disk 1 from Aux4 to Aux1
+Move 627: Disk 1 from Aux1 to Aux2
+Move 628: Disk 1 from Aux2 to Aux3
+Move 629: Disk 1 from Aux3 to Aux4
+Move 630: Disk 2 from Aux1 to Dest
+Move 631: Disk 1 from Aux4 to Aux1
+Move 632: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{Last 100 moves for $n$ = 7}
+
+\begin{Verbatim}[fontsize=\small]
+Move 1758: Disk 1 from Aux2 to Aux3
+Move 1759: Disk 1 from Aux3 to Aux4
+Move 1760: Disk 2 from Aux2 to Aux3
+Move 1761: Disk 1 from Aux4 to Aux1
+Move 1762: Disk 1 from Aux1 to Aux2
+Move 1763: Disk 2 from Aux3 to Aux4
+Move 1764: Disk 1 from Aux2 to Aux3
+Move 1765: Disk 1 from Aux3 to Aux4
+Move 1766: Disk 3 from Aux2 to Aux3
+Move 1767: Disk 1 from Aux4 to Aux1
+Move 1768: Disk 1 from Aux1 to Aux2
+Move 1769: Disk 2 from Aux4 to Aux1
+Move 1770: Disk 1 from Aux2 to Aux3
+Move 1771: Disk 1 from Aux3 to Aux4
+Move 1772: Disk 2 from Aux1 to Aux2
+Move 1773: Disk 1 from Aux4 to Aux1
+Move 1774: Disk 1 from Aux1 to Aux2
+Move 1775: Disk 3 from Aux2 to Aux4
+Move 1776: Disk 3 from Aux4 to Aux1
+Move 1777: Disk 1 from Aux2 to Aux3
+Move 1778: Disk 1 from Aux3 to Aux4
+Move 1779: Disk 2 from Aux2 to Aux3
+Move 1780: Disk 1 from Aux4 to Aux1
+Move 1781: Disk 1 from Aux1 to Aux2
+Move 1782: Disk 2 from Aux2 to Aux4
+Move 1783: Disk 2 from Aux4 to Aux1
+Move 1784: Disk 1 from Aux2 to Aux3
+Move 1785: Disk 1 from Aux3 to Aux4
+Move 1786: Disk 1 from Aux4 to Aux1
+Move 1787: Disk 1 from Aux1 to Aux2
+Move 1788: Disk 1 from Aux2 to Aux3
+Move 1789: Disk 2 from Aux1 to Aux2
+Move 1790: Disk 1 from Aux3 to Aux4
+Move 1791: Disk 1 from Aux4 to Aux1
+Move 1792: Disk 2 from Aux2 to Aux3
+Move 1793: Disk 1 from Aux1 to Aux2
+Move 1794: Disk 1 from Aux2 to Aux3
+Move 1795: Disk 3 from Aux1 to Aux2
+Move 1796: Disk 1 from Aux3 to Aux4
+Move 1797: Disk 1 from Aux4 to Aux1
+Move 1798: Disk 2 from Aux3 to Aux4
+Move 1799: Disk 1 from Aux1 to Aux2
+Move 1800: Disk 1 from Aux2 to Aux3
+Move 1801: Disk 2 from Aux4 to Aux1
+Move 1802: Disk 1 from Aux3 to Aux4
+Move 1803: Disk 1 from Aux4 to Aux1
+Move 1804: Disk 3 from Aux1 to Aux3
+Move 1805: Disk 3 from Aux3 to Aux4
+Move 1806: Disk 1 from Aux1 to Aux2
+Move 1807: Disk 1 from Aux2 to Aux3
+Move 1808: Disk 2 from Aux1 to Aux2
+Move 1809: Disk 1 from Aux3 to Aux4
+Move 1810: Disk 1 from Aux4 to Aux1
+Move 1811: Disk 2 from Aux1 to Aux3
+Move 1812: Disk 2 from Aux3 to Aux4
+Move 1813: Disk 1 from Aux1 to Aux2
+Move 1814: Disk 1 from Aux2 to Aux3
+Move 1815: Disk 1 from Aux3 to Aux4
+Move 1816: Disk 4 from Aux1 to Dest
+Move 1817: Disk 1 from Aux4 to Aux1
+Move 1818: Disk 1 from Aux1 to Aux2
+Move 1819: Disk 2 from Aux4 to Aux1
+Move 1820: Disk 1 from Aux2 to Aux3
+Move 1821: Disk 1 from Aux3 to Aux4
+Move 1822: Disk 2 from Aux1 to Aux2
+Move 1823: Disk 1 from Aux4 to Aux1
+Move 1824: Disk 1 from Aux1 to Aux2
+Move 1825: Disk 3 from Aux4 to Aux1
+Move 1826: Disk 1 from Aux2 to Aux3
+Move 1827: Disk 1 from Aux3 to Aux4
+Move 1828: Disk 2 from Aux2 to Aux3
+Move 1829: Disk 1 from Aux4 to Aux1
+Move 1830: Disk 1 from Aux1 to Aux2
+Move 1831: Disk 2 from Aux2 to Aux4
+Move 1832: Disk 2 from Aux4 to Aux1
+Move 1833: Disk 1 from Aux2 to Aux3
+Move 1834: Disk 1 from Aux3 to Aux4
+Move 1835: Disk 1 from Aux4 to Aux1
+Move 1836: Disk 1 from Aux1 to Aux2
+Move 1837: Disk 1 from Aux2 to Aux3
+Move 1838: Disk 2 from Aux1 to Aux2
+Move 1839: Disk 1 from Aux3 to Aux4
+Move 1840: Disk 1 from Aux4 to Aux1
+Move 1841: Disk 2 from Aux1 to Aux3
+Move 1842: Disk 2 from Aux3 to Aux4
+Move 1843: Disk 1 from Aux1 to Aux2
+Move 1844: Disk 1 from Aux2 to Aux3
+Move 1845: Disk 1 from Aux3 to Aux4
+Move 1846: Disk 3 from Aux1 to Dest
+Move 1847: Disk 1 from Aux4 to Aux1
+Move 1848: Disk 1 from Aux1 to Aux2
+Move 1849: Disk 2 from Aux4 to Aux1
+Move 1850: Disk 1 from Aux2 to Aux3
+Move 1851: Disk 1 from Aux3 to Aux4
+Move 1852: Disk 1 from Aux4 to Aux1
+Move 1853: Disk 1 from Aux1 to Aux2
+Move 1854: Disk 1 from Aux2 to Aux3
+Move 1855: Disk 1 from Aux3 to Aux4
+Move 1856: Disk 2 from Aux1 to Dest
+Move 1857: Disk 1 from Aux4 to Aux1
+Move 1858: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{Last 100 moves for $n$ = 8}
+
+\begin{Verbatim}[fontsize=\small]
+Move 5416: Disk 1 from Aux2 to Aux3
+Move 5417: Disk 1 from Aux3 to Aux4
+Move 5418: Disk 2 from Aux2 to Aux3
+Move 5419: Disk 1 from Aux4 to Aux1
+Move 5420: Disk 1 from Aux1 to Aux2
+Move 5421: Disk 2 from Aux3 to Aux4
+Move 5422: Disk 1 from Aux2 to Aux3
+Move 5423: Disk 1 from Aux3 to Aux4
+Move 5424: Disk 3 from Aux2 to Aux3
+Move 5425: Disk 1 from Aux4 to Aux1
+Move 5426: Disk 1 from Aux1 to Aux2
+Move 5427: Disk 2 from Aux4 to Aux1
+Move 5428: Disk 1 from Aux2 to Aux3
+Move 5429: Disk 1 from Aux3 to Aux4
+Move 5430: Disk 2 from Aux1 to Aux2
+Move 5431: Disk 1 from Aux4 to Aux1
+Move 5432: Disk 1 from Aux1 to Aux2
+Move 5433: Disk 3 from Aux2 to Aux4
+Move 5434: Disk 3 from Aux4 to Aux1
+Move 5435: Disk 1 from Aux2 to Aux3
+Move 5436: Disk 1 from Aux3 to Aux4
+Move 5437: Disk 2 from Aux2 to Aux3
+Move 5438: Disk 1 from Aux4 to Aux1
+Move 5439: Disk 1 from Aux1 to Aux2
+Move 5440: Disk 2 from Aux2 to Aux4
+Move 5441: Disk 2 from Aux4 to Aux1
+Move 5442: Disk 1 from Aux2 to Aux3
+Move 5443: Disk 1 from Aux3 to Aux4
+Move 5444: Disk 1 from Aux4 to Aux1
+Move 5445: Disk 1 from Aux1 to Aux2
+Move 5446: Disk 1 from Aux2 to Aux3
+Move 5447: Disk 2 from Aux1 to Aux2
+Move 5448: Disk 1 from Aux3 to Aux4
+Move 5449: Disk 1 from Aux4 to Aux1
+Move 5450: Disk 2 from Aux2 to Aux3
+Move 5451: Disk 1 from Aux1 to Aux2
+Move 5452: Disk 1 from Aux2 to Aux3
+Move 5453: Disk 3 from Aux1 to Aux2
+Move 5454: Disk 1 from Aux3 to Aux4
+Move 5455: Disk 1 from Aux4 to Aux1
+Move 5456: Disk 2 from Aux3 to Aux4
+Move 5457: Disk 1 from Aux1 to Aux2
+Move 5458: Disk 1 from Aux2 to Aux3
+Move 5459: Disk 2 from Aux4 to Aux1
+Move 5460: Disk 1 from Aux3 to Aux4
+Move 5461: Disk 1 from Aux4 to Aux1
+Move 5462: Disk 3 from Aux1 to Aux3
+Move 5463: Disk 3 from Aux3 to Aux4
+Move 5464: Disk 1 from Aux1 to Aux2
+Move 5465: Disk 1 from Aux2 to Aux3
+Move 5466: Disk 2 from Aux1 to Aux2
+Move 5467: Disk 1 from Aux3 to Aux4
+Move 5468: Disk 1 from Aux4 to Aux1
+Move 5469: Disk 2 from Aux1 to Aux3
+Move 5470: Disk 2 from Aux3 to Aux4
+Move 5471: Disk 1 from Aux1 to Aux2
+Move 5472: Disk 1 from Aux2 to Aux3
+Move 5473: Disk 1 from Aux3 to Aux4
+Move 5474: Disk 4 from Aux1 to Dest
+Move 5475: Disk 1 from Aux4 to Aux1
+Move 5476: Disk 1 from Aux1 to Aux2
+Move 5477: Disk 2 from Aux4 to Aux1
+Move 5478: Disk 1 from Aux2 to Aux3
+Move 5479: Disk 1 from Aux3 to Aux4
+Move 5480: Disk 2 from Aux1 to Aux2
+Move 5481: Disk 1 from Aux4 to Aux1
+Move 5482: Disk 1 from Aux1 to Aux2
+Move 5483: Disk 3 from Aux4 to Aux1
+Move 5484: Disk 1 from Aux2 to Aux3
+Move 5485: Disk 1 from Aux3 to Aux4
+Move 5486: Disk 2 from Aux2 to Aux3
+Move 5487: Disk 1 from Aux4 to Aux1
+Move 5488: Disk 1 from Aux1 to Aux2
+Move 5489: Disk 2 from Aux2 to Aux4
+Move 5490: Disk 2 from Aux4 to Aux1
+Move 5491: Disk 1 from Aux2 to Aux3
+Move 5492: Disk 1 from Aux3 to Aux4
+Move 5493: Disk 1 from Aux4 to Aux1
+Move 5494: Disk 1 from Aux1 to Aux2
+Move 5495: Disk 1 from Aux2 to Aux3
+Move 5496: Disk 2 from Aux1 to Aux2
+Move 5497: Disk 1 from Aux3 to Aux4
+Move 5498: Disk 1 from Aux4 to Aux1
+Move 5499: Disk 2 from Aux1 to Aux3
+Move 5500: Disk 2 from Aux3 to Aux4
+Move 5501: Disk 1 from Aux1 to Aux2
+Move 5502: Disk 1 from Aux2 to Aux3
+Move 5503: Disk 1 from Aux3 to Aux4
+Move 5504: Disk 3 from Aux1 to Dest
+Move 5505: Disk 1 from Aux4 to Aux1
+Move 5506: Disk 1 from Aux1 to Aux2
+Move 5507: Disk 2 from Aux4 to Aux1
+Move 5508: Disk 1 from Aux2 to Aux3
+Move 5509: Disk 1 from Aux3 to Aux4
+Move 5510: Disk 1 from Aux4 to Aux1
+Move 5511: Disk 1 from Aux1 to Aux2
+Move 5512: Disk 1 from Aux2 to Aux3
+Move 5513: Disk 1 from Aux3 to Aux4
+Move 5514: Disk 2 from Aux1 to Dest
+Move 5515: Disk 1 from Aux4 to Aux1
+Move 5516: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{Last 100 moves for $n$ = 9}
+
+\begin{Verbatim}[fontsize=\small]
+Move 16366: Disk 1 from Aux2 to Aux3
+Move 16367: Disk 1 from Aux3 to Aux4
+Move 16368: Disk 2 from Aux2 to Aux3
+Move 16369: Disk 1 from Aux4 to Aux1
+Move 16370: Disk 1 from Aux1 to Aux2
+Move 16371: Disk 2 from Aux3 to Aux4
+Move 16372: Disk 1 from Aux2 to Aux3
+Move 16373: Disk 1 from Aux3 to Aux4
+Move 16374: Disk 3 from Aux2 to Aux3
+Move 16375: Disk 1 from Aux4 to Aux1
+Move 16376: Disk 1 from Aux1 to Aux2
+Move 16377: Disk 2 from Aux4 to Aux1
+Move 16378: Disk 1 from Aux2 to Aux3
+Move 16379: Disk 1 from Aux3 to Aux4
+Move 16380: Disk 2 from Aux1 to Aux2
+Move 16381: Disk 1 from Aux4 to Aux1
+Move 16382: Disk 1 from Aux1 to Aux2
+Move 16383: Disk 3 from Aux2 to Aux4
+Move 16384: Disk 3 from Aux4 to Aux1
+Move 16385: Disk 1 from Aux2 to Aux3
+Move 16386: Disk 1 from Aux3 to Aux4
+Move 16387: Disk 2 from Aux2 to Aux3
+Move 16388: Disk 1 from Aux4 to Aux1
+Move 16389: Disk 1 from Aux1 to Aux2
+Move 16390: Disk 2 from Aux2 to Aux4
+Move 16391: Disk 2 from Aux4 to Aux1
+Move 16392: Disk 1 from Aux2 to Aux3
+Move 16393: Disk 1 from Aux3 to Aux4
+Move 16394: Disk 1 from Aux4 to Aux1
+Move 16395: Disk 1 from Aux1 to Aux2
+Move 16396: Disk 1 from Aux2 to Aux3
+Move 16397: Disk 2 from Aux1 to Aux2
+Move 16398: Disk 1 from Aux3 to Aux4
+Move 16399: Disk 1 from Aux4 to Aux1
+Move 16400: Disk 2 from Aux2 to Aux3
+Move 16401: Disk 1 from Aux1 to Aux2
+Move 16402: Disk 1 from Aux2 to Aux3
+Move 16403: Disk 3 from Aux1 to Aux2
+Move 16404: Disk 1 from Aux3 to Aux4
+Move 16405: Disk 1 from Aux4 to Aux1
+Move 16406: Disk 2 from Aux3 to Aux4
+Move 16407: Disk 1 from Aux1 to Aux2
+Move 16408: Disk 1 from Aux2 to Aux3
+Move 16409: Disk 2 from Aux4 to Aux1
+Move 16410: Disk 1 from Aux3 to Aux4
+Move 16411: Disk 1 from Aux4 to Aux1
+Move 16412: Disk 3 from Aux1 to Aux3
+Move 16413: Disk 3 from Aux3 to Aux4
+Move 16414: Disk 1 from Aux1 to Aux2
+Move 16415: Disk 1 from Aux2 to Aux3
+Move 16416: Disk 2 from Aux1 to Aux2
+Move 16417: Disk 1 from Aux3 to Aux4
+Move 16418: Disk 1 from Aux4 to Aux1
+Move 16419: Disk 2 from Aux1 to Aux3
+Move 16420: Disk 2 from Aux3 to Aux4
+Move 16421: Disk 1 from Aux1 to Aux2
+Move 16422: Disk 1 from Aux2 to Aux3
+Move 16423: Disk 1 from Aux3 to Aux4
+Move 16424: Disk 4 from Aux1 to Dest
+Move 16425: Disk 1 from Aux4 to Aux1
+Move 16426: Disk 1 from Aux1 to Aux2
+Move 16427: Disk 2 from Aux4 to Aux1
+Move 16428: Disk 1 from Aux2 to Aux3
+Move 16429: Disk 1 from Aux3 to Aux4
+Move 16430: Disk 2 from Aux1 to Aux2
+Move 16431: Disk 1 from Aux4 to Aux1
+Move 16432: Disk 1 from Aux1 to Aux2
+Move 16433: Disk 3 from Aux4 to Aux1
+Move 16434: Disk 1 from Aux2 to Aux3
+Move 16435: Disk 1 from Aux3 to Aux4
+Move 16436: Disk 2 from Aux2 to Aux3
+Move 16437: Disk 1 from Aux4 to Aux1
+Move 16438: Disk 1 from Aux1 to Aux2
+Move 16439: Disk 2 from Aux2 to Aux4
+Move 16440: Disk 2 from Aux4 to Aux1
+Move 16441: Disk 1 from Aux2 to Aux3
+Move 16442: Disk 1 from Aux3 to Aux4
+Move 16443: Disk 1 from Aux4 to Aux1
+Move 16444: Disk 1 from Aux1 to Aux2
+Move 16445: Disk 1 from Aux2 to Aux3
+Move 16446: Disk 2 from Aux1 to Aux2
+Move 16447: Disk 1 from Aux3 to Aux4
+Move 16448: Disk 1 from Aux4 to Aux1
+Move 16449: Disk 2 from Aux1 to Aux3
+Move 16450: Disk 2 from Aux3 to Aux4
+Move 16451: Disk 1 from Aux1 to Aux2
+Move 16452: Disk 1 from Aux2 to Aux3
+Move 16453: Disk 1 from Aux3 to Aux4
+Move 16454: Disk 3 from Aux1 to Dest
+Move 16455: Disk 1 from Aux4 to Aux1
+Move 16456: Disk 1 from Aux1 to Aux2
+Move 16457: Disk 2 from Aux4 to Aux1
+Move 16458: Disk 1 from Aux2 to Aux3
+Move 16459: Disk 1 from Aux3 to Aux4
+Move 16460: Disk 1 from Aux4 to Aux1
+Move 16461: Disk 1 from Aux1 to Aux2
+Move 16462: Disk 1 from Aux2 to Aux3
+Move 16463: Disk 1 from Aux3 to Aux4
+Move 16464: Disk 2 from Aux1 to Dest
+Move 16465: Disk 1 from Aux4 to Aux1
+Move 16466: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\subsubsection*{Last 100 moves for $n$ = 10}
+
+\begin{Verbatim}[fontsize=\small]
+Move 49188: Disk 1 from Aux2 to Aux3
+Move 49189: Disk 1 from Aux3 to Aux4
+Move 49190: Disk 2 from Aux2 to Aux3
+Move 49191: Disk 1 from Aux4 to Aux1
+Move 49192: Disk 1 from Aux1 to Aux2
+Move 49193: Disk 2 from Aux3 to Aux4
+Move 49194: Disk 1 from Aux2 to Aux3
+Move 49195: Disk 1 from Aux3 to Aux4
+Move 49196: Disk 3 from Aux2 to Aux3
+Move 49197: Disk 1 from Aux4 to Aux1
+Move 49198: Disk 1 from Aux1 to Aux2
+Move 49199: Disk 2 from Aux4 to Aux1
+Move 49200: Disk 1 from Aux2 to Aux3
+Move 49201: Disk 1 from Aux3 to Aux4
+Move 49202: Disk 2 from Aux1 to Aux2
+Move 49203: Disk 1 from Aux4 to Aux1
+Move 49204: Disk 1 from Aux1 to Aux2
+Move 49205: Disk 3 from Aux2 to Aux4
+Move 49206: Disk 3 from Aux4 to Aux1
+Move 49207: Disk 1 from Aux2 to Aux3
+Move 49208: Disk 1 from Aux3 to Aux4
+Move 49209: Disk 2 from Aux2 to Aux3
+Move 49210: Disk 1 from Aux4 to Aux1
+Move 49211: Disk 1 from Aux1 to Aux2
+Move 49212: Disk 2 from Aux2 to Aux4
+Move 49213: Disk 2 from Aux4 to Aux1
+Move 49214: Disk 1 from Aux2 to Aux3
+Move 49215: Disk 1 from Aux3 to Aux4
+Move 49216: Disk 1 from Aux4 to Aux1
+Move 49217: Disk 1 from Aux1 to Aux2
+Move 49218: Disk 1 from Aux2 to Aux3
+Move 49219: Disk 2 from Aux1 to Aux2
+Move 49220: Disk 1 from Aux3 to Aux4
+Move 49221: Disk 1 from Aux4 to Aux1
+Move 49222: Disk 2 from Aux2 to Aux3
+Move 49223: Disk 1 from Aux1 to Aux2
+Move 49224: Disk 1 from Aux2 to Aux3
+Move 49225: Disk 3 from Aux1 to Aux2
+Move 49226: Disk 1 from Aux3 to Aux4
+Move 49227: Disk 1 from Aux4 to Aux1
+Move 49228: Disk 2 from Aux3 to Aux4
+Move 49229: Disk 1 from Aux1 to Aux2
+Move 49230: Disk 1 from Aux2 to Aux3
+Move 49231: Disk 2 from Aux4 to Aux1
+Move 49232: Disk 1 from Aux3 to Aux4
+Move 49233: Disk 1 from Aux4 to Aux1
+Move 49234: Disk 3 from Aux1 to Aux3
+Move 49235: Disk 3 from Aux3 to Aux4
+Move 49236: Disk 1 from Aux1 to Aux2
+Move 49237: Disk 1 from Aux2 to Aux3
+Move 49238: Disk 2 from Aux1 to Aux2
+Move 49239: Disk 1 from Aux3 to Aux4
+Move 49240: Disk 1 from Aux4 to Aux1
+Move 49241: Disk 2 from Aux1 to Aux3
+Move 49242: Disk 2 from Aux3 to Aux4
+Move 49243: Disk 1 from Aux1 to Aux2
+Move 49244: Disk 1 from Aux2 to Aux3
+Move 49245: Disk 1 from Aux3 to Aux4
+Move 49246: Disk 4 from Aux1 to Dest
+Move 49247: Disk 1 from Aux4 to Aux1
+Move 49248: Disk 1 from Aux1 to Aux2
+Move 49249: Disk 2 from Aux4 to Aux1
+Move 49250: Disk 1 from Aux2 to Aux3
+Move 49251: Disk 1 from Aux3 to Aux4
+Move 49252: Disk 2 from Aux1 to Aux2
+Move 49253: Disk 1 from Aux4 to Aux1
+Move 49254: Disk 1 from Aux1 to Aux2
+Move 49255: Disk 3 from Aux4 to Aux1
+Move 49256: Disk 1 from Aux2 to Aux3
+Move 49257: Disk 1 from Aux3 to Aux4
+Move 49258: Disk 2 from Aux2 to Aux3
+Move 49259: Disk 1 from Aux4 to Aux1
+Move 49260: Disk 1 from Aux1 to Aux2
+Move 49261: Disk 2 from Aux2 to Aux4
+Move 49262: Disk 2 from Aux4 to Aux1
+Move 49263: Disk 1 from Aux2 to Aux3
+Move 49264: Disk 1 from Aux3 to Aux4
+Move 49265: Disk 1 from Aux4 to Aux1
+Move 49266: Disk 1 from Aux1 to Aux2
+Move 49267: Disk 1 from Aux2 to Aux3
+Move 49268: Disk 2 from Aux1 to Aux2
+Move 49269: Disk 1 from Aux3 to Aux4
+Move 49270: Disk 1 from Aux4 to Aux1
+Move 49271: Disk 2 from Aux1 to Aux3
+Move 49272: Disk 2 from Aux3 to Aux4
+Move 49273: Disk 1 from Aux1 to Aux2
+Move 49274: Disk 1 from Aux2 to Aux3
+Move 49275: Disk 1 from Aux3 to Aux4
+Move 49276: Disk 3 from Aux1 to Dest
+Move 49277: Disk 1 from Aux4 to Aux1
+Move 49278: Disk 1 from Aux1 to Aux2
+Move 49279: Disk 2 from Aux4 to Aux1
+Move 49280: Disk 1 from Aux2 to Aux3
+Move 49281: Disk 1 from Aux3 to Aux4
+Move 49282: Disk 1 from Aux4 to Aux1
+Move 49283: Disk 1 from Aux1 to Aux2
+Move 49284: Disk 1 from Aux2 to Aux3
+Move 49285: Disk 1 from Aux3 to Aux4
+Move 49286: Disk 2 from Aux1 to Dest
+Move 49287: Disk 1 from Aux4 to Aux1
+Move 49288: Disk 1 from Aux1 to Dest
+\end{Verbatim}
+
+\end{multicols}
+
+\section*{Problem 2}
+
+For $(a)$ memory is mapped in row-major order. Thus for $A[I,J] = A[I,J]* B[I,J]$ we have two pages per row. Thus for each $I$ loop we have two reads to $A$, two reads to $B$, and two writes to $A$. For $B[I,J] = C[N-I+1,J] * B[I,J]$ since $B[I,J]$ is already in memory for each $I$ loop we have two writes to $B$ and two writes to $C$. Thus we have $(2*2*2)*4000 + (2*2)*4000 = 48000$ transfers in total.
+
+For $(b)$ memory is mapped in column-major order. Each row and column has 4000 pages. For each $I$ loop we have three reads and two writes, so in total we have $2*4000*4000 + 3*4000*4000 = 80000000$ transfers.
+
+\section*{Problem 3}
+
+QuickSort is an algorithm that works by taking a list of values (in our case an array of integers), selecting a pivot value from the list, and sorting all remaining values into two subarrays - one comprised of elements greater than the pivot and one of elements less than the pivot. The algorithm is applied recursively until the array is sorted.
+
+Generally the best case input for QuickSort is one where the size of the two subarrays are the same for each choice of pivot. The worst case input is one where the pivot is the smallest or greatest value in the list. Since our pivot is always the first element, this means the worst cast input would be a sorted array.
+
+The algorithm below uses a Hoare partition scheme. In the standard Lomuto partition scheme QuickSort is inefficient for array input where every element of the array has the same value. For the Hoare partition scheme an array where every element is the same sorts as efficiently as an array where the subarrays generated by the pivot are always equal in size.
+
+Thus for any input $n$ the algorithm below produces an array of length $n$ where every element is the same (our optimal case) and an array of length $n$ that is already sorted in ascending order (our inefficient case). The algorithm has an upper bound of $O(n^2)$ in the worst case and $O(n\log n)$ in the best case.
+
+\subsection*{Source Code}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{C}
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void inefficient_array(int arr[], int n);
+void optimal_array(int arr[], int n);
+void quicksort(int arr[], int lo, int hi);
+void swap(int arr[], int i, int j);
+int partition(int arr[], int lo, int hi);
+
+int main(int argc, char *argv[]) {
+	char *arg = argv[1];
+	int n = atoi(arg);
+	
+	int badarr[n];
+	inefficient_array(badarr,n);
+	int goodarr[n]; 
+	optimal_array(goodarr,n);
+
+	clock_t begin1, end1, begin2, end2;
+
+	begin1 = clock();
+	quicksort(goodarr, 0, n - 1);
+	end1 = clock();
+
+	int time_elapsed = (double)(end1 - begin1)/(CLOCKS_PER_SEC/1000);
+	printf("It took %d milliseconds to quicksort the optimal array\n", time_elapsed);
+	
+	begin2 = clock();
+	quicksort(badarr, 0, n - 1);
+	end2 = clock();
+
+	time_elapsed = (double)(end2 - begin2)/(CLOCKS_PER_SEC/1000);	
+	printf("It took %d milliseconds to quicksort the inefficient array\n", time_elapsed);
+
+	return 0;
+}
+
+void inefficient_array(int arr[], int n) {
+	for (int i = 0; i < n; i++) {
+		arr[i] = i;
+	}
+}
+
+void optimal_array(int arr[], int n) {
+	for (int i = 0; i < n; i++) {
+		arr[i] = 10;
+	}
+}
+
+void quicksort(int arr[], int lo, int hi) {
+	if (lo < hi) {
+		int pivot = partition(arr, lo, hi);
+		quicksort(arr, lo, pivot);
+		quicksort(arr, pivot + 1, hi);
+	}
+}
+
+int partition(int arr[], int lo, int hi) {
+	int pivot = arr[lo];
+	int i = lo - 1;
+	int j = hi + 1;
+
+	while(1) {
+		do {
+			i++;
+		} while (arr[i] < pivot);
+
+		do {
+			j--;
+		} while (arr[j] > pivot);
+
+		if (i >= j) return j;
+		swap(arr, i, j);
+	}
+}
+
+void swap(int arr[], int i, int j) {
+	int temp = arr[i];
+	arr[i] = arr[j];
+	arr[j] = temp;
+}
+
+\end{minted}
+
+\section*{Problem 4}
+
+For this problem we are testing the timing of a simple C program which allocates memory for a sequence of arrays, deallocates all even numbered arrays in that sequence, then allocates a smaller sequence of larger arrays. Our question is whether there is much difference in timing between the first and second allocations.
+
+\subsection*{Hypothesis}
+
+The first and second allocation will have roughly the same timing. As long as the input $m$ doesn't result in a segmentation fault, allocating memory for the first sequence of arrays and allocating memory for the second should have roughly the same time complexity.
+
+\subsection*{Procedure}
+
+I tested the below program with a variety of inputs of $m$ until I started running out of memory. I discovered $m = 200000$ to be around the upper limit of what the program could accept without resulting in a memory error.
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{C}
+
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[] ) {
+
+	char *arg = argv[1];
+	int m = atoi(arg);
+
+	int *arrs_800[3*m];	
+
+	clock_t begin1 = clock();
+
+	for (int i = 0; i < (3*m); i++) {
+		int *temp = (int *)malloc(800000);
+		arrs_800[i] = temp;
+	}
+
+	clock_t end1 = clock();
+	int time_elapsed = (double)(end1 - begin1) /(CLOCKS_PER_SEC/1000);
+	printf("Time elapsed for first allocation is %d milliseconds\n", time_elapsed);
+
+	for (int i = 0; i < (3*m); i+= 2) {
+		free(arrs_800[i]);
+	}
+
+	int *arrs_mil[m];
+	
+	clock_t begin2 = clock();
+
+	for (int i = 0; i < m; i++) {
+		int *temp = (int *)malloc(1000000);
+		arrs_mil[i] = temp;
+	}
+	
+	clock_t end2 = clock();
+	time_elapsed = (double)(end2 - begin2) / (CLOCKS_PER_SEC/1000);
+	printf("Time elapsed for second allocation is %d milliseconds\n", time_elapsed);
+}
+
+\end{minted}
+
+\subsection*{Results}
+
+The average runtime for each allocation over ten trials with $m = 200000$ was 730 milliseconds for the first allocation and 731915 milliseconds for the second allocation.
+
+\subsection*{Explanation}
+
+My hypothesis was incorrect: the second allocation took significantly longer than the first. The reason for this has to do with the deallocation process. When the even arrays are deallocated after the first loop there is technically enough memory for the second loop, but it is not accessible to the second loop until the memory is defragmented. The time it takes to defragment the memory is the reason for the disparity between the two loops.
+
+\section*{Problem 5}
+
+For this problem we are testing a binary search algorithm in three significantly different programming languages (Java, C, Python). We want to find out whether the timing for the algorithm differs depending on which language it is written in.
+
+\subsection*{Hypothesis}
+
+C will perform faster than Java and Java faster than Python. C is a compiled language which tend to be faster than semi-interpreted languages like Java and fully interpreted languages like Python.
+
+\subsection*{Procedure}
+
+All three algorithms are similar in structure. Each has a function that declares an integer array of size $n$, with every element of the array the value $v - 1$ for given target value $v$. The same unsuccessful binary search is run ten million times and the run time is printed to standard output. The algorithm runs this function for the different test cases of $n$ specified by the problem.
+
+\subsubsection*{Java Implementation}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{Java}
+public class Main {
+
+	public static void main(String[] args) {
+		testArr(128, 5);
+		testArr(512, 5);
+		testArr(2048, 5);
+		testArr(8192, 5);
+		testArr(32768, 5);
+		testArr(131072, 5);
+		testArr(524288, 5);
+		testArr(2097152, 5);
+	}
+
+	public static int binarySearch(int arr[], int lo, int hi, int val) {
+		while (lo <= hi) {
+			int mid = lo + (hi - lo)/2;
+
+			if (arr[mid] == val) return mid;
+			if (arr[mid] < val) lo = mid + 1;
+			else hi = mid - 1;
+		}
+		return -1;
+	}
+
+	public static void testArr(int size, int val) {
+		int arr[] = new int[size];
+		for (int i = 0; i < size; i++)
+			arr[i] = val - 1;
+
+		long start = System.currentTimeMillis();
+		manySearch(arr, size, val);
+		long end = System.currentTimeMillis();
+		float sec = end - start;
+
+		System.out.println("The time it took for the array of size " + size + " is " + sec + " milliseconds.");
+	}
+
+	public static void manySearch(int arr[], int size, int val) {
+		int bound = 10000000;
+		for (int i = 0; i < bound; i++)
+			binarySearch(arr, 0, size - 1, val);
+	}
+}
+\end{minted}
+
+\subsubsection*{C Implementation}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{C}
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int binarysearch(int *arr, int lo, int hi, int val);
+void testarr(int size, int val);
+void manysearch(int *arr, int size, int val);
+
+int main() {
+	testarr(128, 5);
+	testarr(512, 5);
+	testarr(2048, 5);
+	testarr(8192, 5);
+	testarr(32768, 5);
+	testarr(131072, 5);
+	testarr(524288, 5);
+	testarr(2097152, 5);
+}
+
+int binarysearch(int *arr, int lo, int hi, int val) {
+	while (lo <= hi) {
+		int mid = lo + (hi - lo)/2;
+
+		if (arr[mid] == val) return mid;
+		if (arr[mid] < val) lo = mid + 1;
+		else hi = mid - 1;
+	}
+	return -1;
+}
+
+void testarr(int size, int val) {
+	int *arr = (int*)malloc(size*sizeof(int));
+
+	for (int i = 0; i < size; i++) {
+		arr[i] = val - 1;
+	}
+
+	clock_t begin = clock();	
+	manysearch(arr,size,val);
+	clock_t end = clock();
+	int time_elapsed = (double) (end - begin)/(CLOCKS_PER_SEC/1000);
+
+	printf("The time it took for the array of size %d is %d milliseconds\n", size, time_elapsed);
+
+	free(arr);
+}
+
+void manysearch(int *arr, int size, int val) {
+	int bound = 10000000;
+
+	for (int i = 0; i < bound; i++) 
+		binarysearch(arr, 0, size - 1, val);
+}
+\end{minted}
+
+\subsubsection*{Python Implementation}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{Python}
+import time
+
+def binarysearch(arr, lo, hi, val):
+    while lo <= hi:
+
+        mid = lo + (hi - lo)//2
+        if arr[mid] == val:
+            return mid
+        elif arr[mid] < val:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1
+
+def testarr(size, val):
+    arr = []
+    for i in range(0,size):
+        arr.append(val - 1)
+        
+    start = time.time()
+    
+    for i in range(0, 10000000):
+        res = binarysearch(arr, 0, size-1, val)
+    
+    end = time.time() - start
+    fin_time = end * 1000
+
+    print("The time it took for array of size " + str(size) + " is " + str(fin_time) + " milliseconds")
+
+def main():
+    testarr(128, 5)
+    testarr(512, 5)
+    testarr(2048, 5)
+    testarr(8192, 5)
+    testarr(32768, 5)
+    testarr(131072, 5)
+    testarr(524288, 5)
+    testarr(2097152, 5)
+
+if __name__ == "__main__":
+    main()
+\end{minted}
+
+\subsection*{Results}
+
+\begin{center}
+\begin{tabular}{| c | c c c |}
+\hline
+Array Size & Time in Java (ms) & Time in C (ms) & Time in Python (ms) \\
+\hline
+128 & 178 & 720 & 16914 \\
+512 & 228 & 952 & 23603 \\
+2048 & 281 & 1439 & 29850 \\
+8192 &  333 & 1394 & 33424 \\
+32768 & 378 & 1629 & 38553 \\
+131072 & 436 & 1859 & 43382 \\
+524288 & 491 & 2277 & 47586 \\
+2097152 & 544 & 2482 & 52050 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Explanation}
+
+My hypothesis that C would be faster than both Java and Python turned out to be incorrect. C was slower than Java. This is a surprising result since Java requires more memory than C and garbage collection is slower than managing memory manually. The reason for this seems to be the C compiler. The C code was compiled using the gcc command line compiler and the default optimization setting for gcc is rather poor. Testing other optimization settings I found the C code to be remarkably fast, and much faster than the Java version.
+
+However, my hypothesis was partly correct in that Python was far and away the slowest. This is due to Python being a dynamically-typed, interpreted language. Interpreters lack the speed of compilers since they cannot "look ahead" and make optimizations.
+
+It is worth noting that despite the variable runtimes for all three algorithms, they all grew with an asymptotic upper bound of $O(\log n)$, which is the expected time complexity of a binary search. 
 
 \end{document}
