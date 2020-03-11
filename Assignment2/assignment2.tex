@@ -1,0 +1,33 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage{minted}
+\usepackage{xcolor}
+
+\title{Assignment 2 - COSC 3320}
+\author{Alex Bennett (ID: 1901408)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Theory Problem 1}
+
+\subsection*{(a)}
+To check if an element in $L_1$ is in $L_2$ we must iterate over each element of $L_1$ ($n$ elements), and then compare each element of $L_1$ with every element of $L_2$. Thus the lower bound is $O(n^2)$.
+
+\subsection*{(b)}
+
+\section*{Theory Problem 2}
+
+\section*{Theory Problem 3}
+
+To determine the average number of scalar multiplications for a sequence of $n$ matrices we will use the following informal algorithm:
+$\\ \\ S[i,i] = 0 \\
+S[i,i+1] = p_i + p_{i+1} + p_{i+2} \\
+S[i,j] = \operatorname{avg}(S[i,k] + S[k+1,j] + p_i + p_{k+1} + p_{k+1}), \text{ for } i \leq k \leq j-1 \\ $
+
+Where $S[i,j]$ is the matrix representing the average work for a parentheses configuration grouping every element from $i$ to $j$ and $p_i$ represents the $i$th dimension of the original matrix sequence. The average work is equal to the sum of scalar multiplications for possible k-values divided by the total number of k-values.
+
+Since this algorithm will be iterated over 3 nested for-loops the time complexity is $O(n^3)$. Since $S$ is two dimensional our space complexity is $O(n^2)$
+
+\end{document}
