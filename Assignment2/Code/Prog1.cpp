@@ -7,19 +7,15 @@ int main(int argc, char *argv[]) {
 	char *arg = argv[1];
 	int n = atoi(arg);
 
-	int* arr[n];
-	int** A = arr;
-	int** B = arr;
-	int** C = arr;
-
-	int arr2[n];
+	int** A = new int*[n];
+	int** B = new int*[n];
+	int** C = new int*[n];
 
 	//Initialize A,B,C
 	for (int i = 0; i < n; i++) {
-		int arr2[n];
-		A[i] = arr2;
-		B[i] = arr2;
-		C[i] = arr2;
+		A[i] = new int[n];
+		B[i] = new int[n];
+		C[i] = new int[n];
 	}
 
 	for (int i = 0; i < n; i++) {
