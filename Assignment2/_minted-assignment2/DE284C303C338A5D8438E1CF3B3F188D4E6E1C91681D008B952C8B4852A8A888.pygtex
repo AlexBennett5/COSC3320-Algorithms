@@ -1,0 +1,54 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}stdio.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}time.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}stdlib.h\PYGZgt{}}
+
+\PYG{k+kt}{int} \PYG{n+nf}{main}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{argc}\PYG{p}{,} \PYG{k+kt}{char} \PYG{o}{*}\PYG{n}{argv}\PYG{p}{[])} \PYG{p}{\PYGZob{}}
+
+	\PYG{k+kt}{char} \PYG{o}{*}\PYG{n}{arg} \PYG{o}{=} \PYG{n}{argv}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{];}
+	\PYG{k+kt}{int} \PYG{n}{n} \PYG{o}{=} \PYG{n}{atoi}\PYG{p}{(}\PYG{n}{arg}\PYG{p}{);}
+
+	\PYG{k+kt}{int}\PYG{o}{**} \PYG{n}{X} \PYG{o}{=} \PYG{n}{new} \PYG{k+kt}{int}\PYG{o}{*}\PYG{p}{[}\PYG{n}{n}\PYG{p}{];}
+	\PYG{k+kt}{int}\PYG{o}{**} \PYG{n}{Y} \PYG{o}{=} \PYG{n}{new} \PYG{k+kt}{int}\PYG{o}{*}\PYG{p}{[}\PYG{n}{n}\PYG{p}{];}
+	\PYG{k+kt}{int}\PYG{o}{**} \PYG{n}{Z} \PYG{o}{=} \PYG{n}{new} \PYG{k+kt}{int}\PYG{o}{*}\PYG{p}{[}\PYG{n}{n}\PYG{p}{];}
+
+	\PYG{c+c1}{//Initialize X, Y, Z}
+	\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{i} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i} \PYG{o}{\PYGZlt{}} \PYG{n}{n}\PYG{p}{;} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{n}{X}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n}{new} \PYG{k+kt}{int}\PYG{p}{[}\PYG{n}{n}\PYG{p}{];}
+		\PYG{n}{Y}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n}{new} \PYG{k+kt}{int}\PYG{p}{[}\PYG{n}{n}\PYG{p}{];}
+		\PYG{n}{Z}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n}{new} \PYG{k+kt}{int}\PYG{p}{[}\PYG{n}{n}\PYG{p}{];}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{i} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i} \PYG{o}{\PYGZlt{}} \PYG{n}{n}\PYG{p}{;} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{j} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{j} \PYG{o}{\PYGZlt{}} \PYG{n}{n}\PYG{p}{;} \PYG{n}{j}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{X}\PYG{p}{[}\PYG{n}{i}\PYG{p}{][}\PYG{n}{j}\PYG{p}{]} \PYG{o}{=} \PYG{l+m+mi}{1}\PYG{p}{;}
+			\PYG{n}{Y}\PYG{p}{[}\PYG{n}{i}\PYG{p}{][}\PYG{n}{j}\PYG{p}{]} \PYG{o}{=} \PYG{l+m+mi}{1}\PYG{p}{;}
+		\PYG{p}{\PYGZcb{}}
+	\PYG{p}{\PYGZcb{}}
+	
+	\PYG{c+c1}{//Version 1}
+	\PYG{k+kt}{clock\PYGZus{}t} \PYG{n}{begin1} \PYG{o}{=} \PYG{n}{clock}\PYG{p}{();}
+	\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{i} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i} \PYG{o}{\PYGZlt{}} \PYG{n}{n}\PYG{p}{;} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{j} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{j} \PYG{o}{\PYGZlt{}} \PYG{n}{n}\PYG{p}{;} \PYG{n}{j}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{Z}\PYG{p}{[}\PYG{n}{i}\PYG{p}{][}\PYG{n}{j}\PYG{p}{]} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{n}{i}\PYG{p}{][}\PYG{n}{j}\PYG{p}{]} \PYG{o}{+} \PYG{n}{Y}\PYG{p}{[}\PYG{n}{i}\PYG{p}{][}\PYG{n}{j}\PYG{p}{];}
+		\PYG{p}{\PYGZcb{}}
+	\PYG{p}{\PYGZcb{}}
+	\PYG{k+kt}{clock\PYGZus{}t} \PYG{n}{end1} \PYG{o}{=} \PYG{n}{clock}\PYG{p}{();}
+
+	\PYG{c+c1}{//Version 2}
+	\PYG{k+kt}{clock\PYGZus{}t} \PYG{n}{begin2} \PYG{o}{=} \PYG{n}{clock}\PYG{p}{();}
+	\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{j} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{j} \PYG{o}{\PYGZlt{}} \PYG{n}{n}\PYG{p}{;} \PYG{n}{j}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{i} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i} \PYG{o}{\PYGZlt{}} \PYG{n}{n}\PYG{p}{;} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{Z}\PYG{p}{[}\PYG{n}{i}\PYG{p}{][}\PYG{n}{j}\PYG{p}{]} \PYG{o}{=} \PYG{n}{X}\PYG{p}{[}\PYG{n}{i}\PYG{p}{][}\PYG{n}{j}\PYG{p}{]} \PYG{o}{+} \PYG{n}{Y}\PYG{p}{[}\PYG{n}{i}\PYG{p}{][}\PYG{n}{j}\PYG{p}{];}
+		\PYG{p}{\PYGZcb{}}
+	\PYG{p}{\PYGZcb{}}
+	\PYG{k+kt}{clock\PYGZus{}t} \PYG{n}{end2} \PYG{o}{=} \PYG{n}{clock}\PYG{p}{();}
+
+	\PYG{k+kt}{int} \PYG{n}{time1} \PYG{o}{=} \PYG{p}{(}\PYG{k+kt}{double}\PYG{p}{)(}\PYG{n}{end1} \PYG{o}{\PYGZhy{}} \PYG{n}{begin1}\PYG{p}{)}\PYG{o}{/}\PYG{p}{(}\PYG{n}{CLOCKS\PYGZus{}PER\PYGZus{}SEC}\PYG{o}{/}\PYG{l+m+mi}{1000}\PYG{p}{);}
+	\PYG{k+kt}{int} \PYG{n}{time2} \PYG{o}{=} \PYG{p}{(}\PYG{k+kt}{double}\PYG{p}{)(}\PYG{n}{end2} \PYG{o}{\PYGZhy{}} \PYG{n}{begin2}\PYG{p}{)}\PYG{o}{/}\PYG{p}{(}\PYG{n}{CLOCKS\PYGZus{}PER\PYGZus{}SEC}\PYG{o}{/}\PYG{l+m+mi}{1000}\PYG{p}{);}
+
+	\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Version 1: \PYGZpc{}d milliseconds}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{time1}\PYG{p}{);}
+	\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Version 2: \PYGZpc{}d milliseconds}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{time2}\PYG{p}{);}
+
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}
