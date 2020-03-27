@@ -134,4 +134,323 @@ Dimension of Array & Time of Vers. 1 (ms) & Time of Vers. 2 (ms) \\
 
 My hypothesis was correct: there was a substantial difference in timing between Version 1 and Version 2. As explained in the hypothesis depending on how programming languages store arrays in memory, row-major and column-major traversals of an array can vary quite significantly in their timings. Since Version 1 (row-major) was much faster than Version 2 (column-major), we can conclude that C++ stores multidimensional arrays in row-major order. In fact this is true for most languages of the C family.
 
+\section*{Programming Problem 2}
+
+\subsection*{Procedure}
+
+\subsection*{Hypothesis}
+
+\subsection*{Java Implementation}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{Java}
+
+import java.util.Random;
+
+public class Prog2 {
+
+	public static void main (String[] args) {
+
+		int n = Integer.parseInt(args[0]);
+
+		int[][] M = new int[n][n];
+
+		for (int k = 0; k < n; k++) {
+			for (int q = 0; q < n; q++) {
+				M[k][q] = 0;
+			}
+		}
+
+		long start1 = System.currentTimeMillis();
+		long m_1 = 1677721600;
+		Random r = new Random();
+
+		for (long k = 0; k < m_1; k++) {
+			int x = r.nextInt(100) + 1;
+			int j = r.nextInt(n);
+			int i = r.nextInt(n);
+			M[i][j] = M[i][j] + x;
+		}
+
+		long end1 = System.currentTimeMillis();
+
+		long start2 = System.currentTimeMillis();
+		long m_2 = 13421772800L;
+
+		for (long k = 0; k < m_2; k++) {
+			int x = r.nextInt(100) + 1;
+			int j = r.nextInt(n);
+			int i = r.nextInt(n);
+			M[i][j] = M[i][j] + x;
+		}
+
+		long end2 = System.currentTimeMillis();
+
+		System.out.println("Time elalpsed for n=" + n + " for m_1: " + (end1 - start1) + " milliseconds");
+		System.out.println("Time elalpsed for n=" + n + " for m_2: " + (end2 - start2) + " milliseconds");
+
+
+	}
+}
+
+\end{minted}
+
+\subsection*{Results}
+
+\begin{center}
+\makebox[\textwidth]{
+\begin{tabular}{| c | c c |}
+\hline
+n & Time for m=1677721600 (ms) & Time for m=13421772800 (ms) \\ 
+\hline
+16 & 55336 & 430628 \\
+64 & 55951 & 424845 \\
+256 & 59988 & 445868 \\
+1024 & 121313 & 795774 \\
+4096 & 232810 & 1858610 \\
+16384 & 286520 & 2290697 \\
+\hline
+\end{tabular}}
+\end{center}
+
+\subsection*{Explanation}
+
+\section*{Programming Problem 3}
+
+\section*{Programming Problem 4}
+
+\subsection*{Procedure}
+
+\subsection*{Hypothesis}
+
+\subsection*{Java Implementation}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{Java}
+import com.sun.management.OperatingSystemMXBean;
+import java.lang.management.ManagementFactory;
+
+public class Prog4 {
+
+	public static void main (String[] args) {
+		
+		OperatingSystemMXBean opsys = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+		System.out.println("Phys Mem: " + opsys.getFreePhysicalMemorySize());
+		System.out.println("Virtual Mem: " + opsys.getCommittedVirtualMemorySize());
+		System.out.println("Free swap space: " + opsys.getFreeSwapSpaceSize());
+	
+		double[] C = {0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1.0, 1.01, 1.1, 1.5, 2, 5, 10, 50};
+		long freeBytes = opsys.getFreePhysicalMemorySize();
+
+		for (int i = 0; i < 15; i++) {
+			System.out.println("-----------------------\n" + "Cache Size: " + C[i] + "*M");
+			long start = System.currentTimeMillis();
+
+			int numBytes = Math.abs((int)(C[i] * (freeBytes)));
+			int size = numBytes/4;
+			int[] testArr = new int[size];
+
+			System.out.println("Phys Mem: " + opsys.getFreePhysicalMemorySize());
+			System.out.println("Virtual Mem: " + opsys.getCommittedVirtualMemorySize());
+			System.out.println("Free swap space: " + opsys.getFreeSwapSpaceSize());
+			
+			for (int j = 0; j < size; j++) {
+				testArr[j] = i + 1;
+			}
+			for (int j = 0; j < size; j++) {
+				testArr[j] -= 2;
+			}
+			
+			System.out.println("Time elapsed: " + ((double) System.currentTimeMillis() - start) + " milliseconds");
+
+		}
+	
+	}
+}
+
+\end{minted}
+
+
+\subsection*{Results}
+
+
+\begin{center}
+\makebox[\textwidth]{
+\begin{tabular}{| c | c c c c |}
+\hline
+Cache Size & Free Physical Mem (bytes) & Free Virtual Mem (bytes) & Free Swap Space (bytes) & Time (ms) \\ 
+\hline
+Start & 292106240 & 10460585984 & 766246912 & N/A \\
+0.5*M & 142024704 & 10476437504 & 766246912 & 138 \\
+0.6*M & 105308160 & 10485899264 & 766246912 & 98 \\
+0.7*M & 92807168 & 10486038528 & 766246912 & 78 \\
+0.8*M & 78573568 & 10487099392 & 766246912 & 89 \\
+0.9*M & 78573568 & 10488160256 & 766246912 & 102 \\
+0.95*M & 78573568 & 10488160256 & 766246912 & 98 \\
+0.99*M & 78573568 & 10488160256 & 766246912 & 100 \\
+1.0*M & 78573568 & 10496548864 & 766246912 & 99 \\
+1.01*M & 78573568 & 10496548864 & 766246912 & 100 \\
+1.1*M & 78573568 & 10496548864 & 766246912 & 116 \\
+1.5*M & 21618688 & 10496548864 & 766246912 & 187 \\
+2.0*M & 22835200 & 10496548864 & 766246912 & 246 \\
+5.0*M & 23138304 & 10498646016 &  766246912 & 1072 \\
+10.0*M & 23121920 & 10499694592 & 766246912 & 824 \\
+50.0*M & 21336064 & 10499796992 & 766246912 & 663 \\
+\hline
+\end{tabular}}
+\end{center}
+
+\subsection*{Explanation}
+
+\section*{Programming Problem 5}
+
+\subsection*{Description of algorithm}
+
+Our algorithm for generating an optimal Huffman code works as follows. We first take characters and their frequencies as input from the user. We create tree nodes for each character and its frequency, and store them in a priority queue sorted by frequency. We then take the two least frequent nodes in the queue and construct a new node connecting the two, whose frequency is derived from their two frequencies combined. This new node is added back into the queue. We continue this process until only one node remains. This resultant tree supplies our Huffman encoding.
+
+\subsection*{Java Implementation}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{Java}
+import java.util.Scanner;
+import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+
+class Node {
+	char ch;
+	int freq;
+	Node left;
+	Node right;
+}
+
+class HuffComparator implements Comparator<Node> {
+	public int compare(Node a, Node b) {
+		return a.freq - b.freq;
+	}
+}
+
+public class Prog5 {
+
+	public static void main(String[] args) {
+
+		Scanner reader = new Scanner(System.in);
+		ArrayList<Character> chars = new ArrayList<Character>();
+		ArrayList<Integer> frequency = new ArrayList<Integer>();
+		boolean check = true;
+		
+		while(check) {
+			System.out.println("Enter character (to exit enter '0')");
+			char elem = reader.nextLine().charAt(0);
+			
+			if (elem == '0') {
+				check = false;
+			} else {
+				System.out.println("What is the frequency for the character?");
+				int freq = Integer.parseInt(reader.nextLine());
+				chars.add(elem);
+				frequency.add(freq);
+			}
+		}
+		
+		PriorityQueue<Node> queue = new PriorityQueue<Node>(chars.size(), new HuffComparator());
+
+		for (int i = 0; i < chars.size(); i++) {
+			Node newNode = new Node();
+			
+			newNode.ch = chars.get(i);
+			newNode.freq = frequency.get(i);
+			newNode.right = null;
+			newNode.left = null;
+
+			queue.add(newNode);
+		}
+		
+		Node root = null;
+
+		while (queue.size() > 1) {
+
+			Node a = queue.peek();
+			queue.poll();
+			Node b = queue.peek();
+			queue.poll();
+
+			Node c = new Node();
+
+			c.freq = a.freq + b.freq;
+			c.ch = '-';
+			c.left = a;
+			c.right = b;
+			root = c;
+
+			queue.add(c);
+
+		}
+
+		printCode(root, "");
+
+	}
+
+	public static void printCode(Node root, String code) {
+		if (root.left == null && root.right == null && Character.isLetter(root.ch)) {
+			System.out.println(root.ch + ": " + code);
+			return;
+		}
+
+		printCode(root.left, code + "0");
+		printCode(root.right, code + "1");
+	}
+
+}
+\end{minted}
+
+\subsection*{Sample Huffman Code}
+
+For character|frequency input:
+
+a|8
+v|1
+z|1
+b|5
+c|6
+p|4
+e|10
+
+Our algorithm generates the Huffman code:
+
+c: 00
+a: 01
+e: 10
+b: 110
+v: 11100
+z: 11101
+p: 1111
+
 \end{document}

@@ -1,0 +1,92 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{java.util.Scanner}\PYG{p}{;}
+\PYG{k+kn}{import} \PYG{n+nn}{java.util.Comparator}\PYG{p}{;}
+\PYG{k+kn}{import} \PYG{n+nn}{java.util.ArrayList}\PYG{p}{;}
+\PYG{k+kn}{import} \PYG{n+nn}{java.util.PriorityQueue}\PYG{p}{;}
+
+\PYG{k+kd}{class} \PYG{n+nc}{Node} \PYG{p}{\PYGZob{}}
+	\PYG{k+kt}{char} \PYG{n}{ch}\PYG{p}{;}
+	\PYG{k+kt}{int} \PYG{n}{freq}\PYG{p}{;}
+	\PYG{n}{Node} \PYG{n}{left}\PYG{p}{;}
+	\PYG{n}{Node} \PYG{n}{right}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{class} \PYG{n+nc}{HuffComparator} \PYG{k+kd}{implements} \PYG{n}{Comparator}\PYG{o}{\PYGZlt{}}\PYG{n}{Node}\PYG{o}{\PYGZgt{}} \PYG{p}{\PYGZob{}}
+	\PYG{k+kd}{public} \PYG{k+kt}{int} \PYG{n+nf}{compare}\PYG{p}{(}\PYG{n}{Node} \PYG{n}{a}\PYG{p}{,} \PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{return} \PYG{n}{a}\PYG{p}{.}\PYG{n+na}{freq} \PYG{o}{\PYGZhy{}} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{freq}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{public} \PYG{k+kd}{class} \PYG{n+nc}{Prog5} \PYG{p}{\PYGZob{}}
+
+	\PYG{k+kd}{public} \PYG{k+kd}{static} \PYG{k+kt}{void} \PYG{n+nf}{main}\PYG{p}{(}\PYG{n}{String}\PYG{o}{[]} \PYG{n}{args}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+
+		\PYG{n}{Scanner} \PYG{n}{reader} \PYG{o}{=} \PYG{k}{new} \PYG{n}{Scanner}\PYG{p}{(}\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{in}\PYG{p}{);}
+		\PYG{n}{ArrayList}\PYG{o}{\PYGZlt{}}\PYG{n}{Character}\PYG{o}{\PYGZgt{}} \PYG{n}{chars} \PYG{o}{=} \PYG{k}{new} \PYG{n}{ArrayList}\PYG{o}{\PYGZlt{}}\PYG{n}{Character}\PYG{o}{\PYGZgt{}}\PYG{p}{();}
+		\PYG{n}{ArrayList}\PYG{o}{\PYGZlt{}}\PYG{n}{Integer}\PYG{o}{\PYGZgt{}} \PYG{n}{frequency} \PYG{o}{=} \PYG{k}{new} \PYG{n}{ArrayList}\PYG{o}{\PYGZlt{}}\PYG{n}{Integer}\PYG{o}{\PYGZgt{}}\PYG{p}{();}
+		\PYG{k+kt}{boolean} \PYG{n}{check} \PYG{o}{=} \PYG{k+kc}{true}\PYG{p}{;}
+		
+		\PYG{k}{while}\PYG{p}{(}\PYG{n}{check}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Enter character (to exit enter \PYGZsq{}0\PYGZsq{})\PYGZdq{}}\PYG{p}{);}
+			\PYG{k+kt}{char} \PYG{n}{elem} \PYG{o}{=} \PYG{n}{reader}\PYG{p}{.}\PYG{n+na}{nextLine}\PYG{p}{().}\PYG{n+na}{charAt}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{);}
+			
+			\PYG{k}{if} \PYG{p}{(}\PYG{n}{elem} \PYG{o}{==} \PYG{l+s+sc}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+				\PYG{n}{check} \PYG{o}{=} \PYG{k+kc}{false}\PYG{p}{;}
+			\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}}
+				\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}What is the frequency for the character?\PYGZdq{}}\PYG{p}{);}
+				\PYG{k+kt}{int} \PYG{n}{freq} \PYG{o}{=} \PYG{n}{Integer}\PYG{p}{.}\PYG{n+na}{parseInt}\PYG{p}{(}\PYG{n}{reader}\PYG{p}{.}\PYG{n+na}{nextLine}\PYG{p}{());}
+				\PYG{n}{chars}\PYG{p}{.}\PYG{n+na}{add}\PYG{p}{(}\PYG{n}{elem}\PYG{p}{);}
+				\PYG{n}{frequency}\PYG{p}{.}\PYG{n+na}{add}\PYG{p}{(}\PYG{n}{freq}\PYG{p}{);}
+			\PYG{p}{\PYGZcb{}}
+		\PYG{p}{\PYGZcb{}}
+		
+		\PYG{n}{PriorityQueue}\PYG{o}{\PYGZlt{}}\PYG{n}{Node}\PYG{o}{\PYGZgt{}} \PYG{n}{queue} \PYG{o}{=} \PYG{k}{new} \PYG{n}{PriorityQueue}\PYG{o}{\PYGZlt{}}\PYG{n}{Node}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{n}{chars}\PYG{p}{.}\PYG{n+na}{size}\PYG{p}{(),} \PYG{k}{new} \PYG{n}{HuffComparator}\PYG{p}{());}
+
+		\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{i} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i} \PYG{o}{\PYGZlt{}} \PYG{n}{chars}\PYG{p}{.}\PYG{n+na}{size}\PYG{p}{();} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{Node} \PYG{n}{newNode} \PYG{o}{=} \PYG{k}{new} \PYG{n}{Node}\PYG{p}{();}
+			
+			\PYG{n}{newNode}\PYG{p}{.}\PYG{n+na}{ch} \PYG{o}{=} \PYG{n}{chars}\PYG{p}{.}\PYG{n+na}{get}\PYG{p}{(}\PYG{n}{i}\PYG{p}{);}
+			\PYG{n}{newNode}\PYG{p}{.}\PYG{n+na}{freq} \PYG{o}{=} \PYG{n}{frequency}\PYG{p}{.}\PYG{n+na}{get}\PYG{p}{(}\PYG{n}{i}\PYG{p}{);}
+			\PYG{n}{newNode}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{k+kc}{null}\PYG{p}{;}
+			\PYG{n}{newNode}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{=} \PYG{k+kc}{null}\PYG{p}{;}
+
+			\PYG{n}{queue}\PYG{p}{.}\PYG{n+na}{add}\PYG{p}{(}\PYG{n}{newNode}\PYG{p}{);}
+		\PYG{p}{\PYGZcb{}}
+		
+		\PYG{n}{Node} \PYG{n}{root} \PYG{o}{=} \PYG{k+kc}{null}\PYG{p}{;}
+
+		\PYG{k}{while} \PYG{p}{(}\PYG{n}{queue}\PYG{p}{.}\PYG{n+na}{size}\PYG{p}{()} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+
+			\PYG{n}{Node} \PYG{n}{a} \PYG{o}{=} \PYG{n}{queue}\PYG{p}{.}\PYG{n+na}{peek}\PYG{p}{();}
+			\PYG{n}{queue}\PYG{p}{.}\PYG{n+na}{poll}\PYG{p}{();}
+			\PYG{n}{Node} \PYG{n}{b} \PYG{o}{=} \PYG{n}{queue}\PYG{p}{.}\PYG{n+na}{peek}\PYG{p}{();}
+			\PYG{n}{queue}\PYG{p}{.}\PYG{n+na}{poll}\PYG{p}{();}
+
+			\PYG{n}{Node} \PYG{n}{c} \PYG{o}{=} \PYG{k}{new} \PYG{n}{Node}\PYG{p}{();}
+
+			\PYG{n}{c}\PYG{p}{.}\PYG{n+na}{freq} \PYG{o}{=} \PYG{n}{a}\PYG{p}{.}\PYG{n+na}{freq} \PYG{o}{+} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{freq}\PYG{p}{;}
+			\PYG{n}{c}\PYG{p}{.}\PYG{n+na}{ch} \PYG{o}{=} \PYG{l+s+sc}{\PYGZsq{}\PYGZhy{}\PYGZsq{}}\PYG{p}{;}
+			\PYG{n}{c}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{=} \PYG{n}{a}\PYG{p}{;}
+			\PYG{n}{c}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{n}{b}\PYG{p}{;}
+			\PYG{n}{root} \PYG{o}{=} \PYG{n}{c}\PYG{p}{;}
+
+			\PYG{n}{queue}\PYG{p}{.}\PYG{n+na}{add}\PYG{p}{(}\PYG{n}{c}\PYG{p}{);}
+
+		\PYG{p}{\PYGZcb{}}
+
+		\PYG{n}{printCode}\PYG{p}{(}\PYG{n}{root}\PYG{p}{,} \PYG{l+s}{\PYGZdq{}\PYGZdq{}}\PYG{p}{);}
+
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{public} \PYG{k+kd}{static} \PYG{k+kt}{void} \PYG{n+nf}{printCode}\PYG{p}{(}\PYG{n}{Node} \PYG{n}{root}\PYG{p}{,} \PYG{n}{String} \PYG{n}{code}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{root}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{==} \PYG{k+kc}{null} \PYG{o}{\PYGZam{}\PYGZam{}} \PYG{n}{root}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{==} \PYG{k+kc}{null} \PYG{o}{\PYGZam{}\PYGZam{}} \PYG{n}{Character}\PYG{p}{.}\PYG{n+na}{isLetter}\PYG{p}{(}\PYG{n}{root}\PYG{p}{.}\PYG{n+na}{ch}\PYG{p}{))} \PYG{p}{\PYGZob{}}
+			\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{n}{root}\PYG{p}{.}\PYG{n+na}{ch} \PYG{o}{+} \PYG{l+s}{\PYGZdq{}: \PYGZdq{}} \PYG{o}{+} \PYG{n}{code}\PYG{p}{);}
+			\PYG{k}{return}\PYG{p}{;}
+		\PYG{p}{\PYGZcb{}}
+
+		\PYG{n}{printCode}\PYG{p}{(}\PYG{n}{root}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{,} \PYG{n}{code} \PYG{o}{+} \PYG{l+s}{\PYGZdq{}0\PYGZdq{}}\PYG{p}{);}
+		\PYG{n}{printCode}\PYG{p}{(}\PYG{n}{root}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{,} \PYG{n}{code} \PYG{o}{+} \PYG{l+s}{\PYGZdq{}1\PYGZdq{}}\PYG{p}{);}
+	\PYG{p}{\PYGZcb{}}
+
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}
