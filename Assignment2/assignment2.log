@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  26 MAR 2020 20:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  28 MAR 2020 13:10
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -321,25 +321,54 @@ LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <9> not available
 ) [2] [3]
 \openout3 = `assignment2.pyg'.
 
-runsystem(pygmentize -l Java -f latex -P commandprefix=PYG -F tokenmerge -o _mi
-nted-assignment2/25CA77E114B9A87AEAA88919EDD12A5A63F55BA458446E3C1E65C726FB555D
-5D.pygtex assignment2.pyg)...executed.
-
-
+ [4]
 (./_minted-assignment2/25CA77E114B9A87AEAA88919EDD12A5A63F55BA458446E3C1E65C726
-FB555D5D.pygtex)
-Overfull \vbox (2.70065pt too high) detected at line 205
+FB555D5D.pygtex) [5]
+\openout3 = `assignment2.pyg'.
+
+
+(./_minted-assignment2/F21A72A4E67FC1653BEA4490B6CD400063F55BA458446E3C1E65C726
+FB555D5D.pygtex) [6]
+Underfull \vbox (badness 10000) detected at line 458
  []
 
-[4]
-Underfull \vbox (badness 10000) detected at line 205
+
+Underfull \vbox (badness 10000) detected at line 458
+ []
+
+[7]
+Underfull \vbox (badness 10000) detected at line 458
  []
 
 
-Underfull \vbox (badness 10000) detected at line 205
+Underfull \vbox (badness 10000) detected at line 458
  []
 
-[5]
+[8]
+Underfull \vbox (badness 10000) detected at line 458
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 458
+ []
+
+[9]
+Underfull \vbox (badness 10000) detected at line 458
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 458
+ []
+
+[10]
+Underfull \vbox (badness 10000) detected at line 458
+ []
+
+
+Overfull \vbox (10.79779pt too high) detected at line 458
+ []
+
+[11]
 \openout3 = `assignment2.pyg'.
 
 
@@ -350,39 +379,43 @@ Overfull \hbox (47.62033pt too wide) in paragraph at lines 9--9
 ]class[]);|  
  []
 
-) [6] [7]
+) [12]
+Underfull \vbox (badness 10000) detected at line 535
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 535
+ []
+
+[13]
 \openout3 = `assignment2.pyg'.
 
-
+ [14]
 (./_minted-assignment2/378EE1F1213B6240D7496A989EBCB11663F55BA458446E3C1E65C726
-FB555D5D.pygtex) [8]
-Underfull \vbox (badness 10000) detected at line 432
+FB555D5D.pygtex)
+Overfull \vbox (12.92035pt too high) detected at line 678
+ []
+
+[15]
+Underfull \vbox (badness 10000) detected at line 678
  []
 
 
-Underfull \vbox (badness 10000) detected at line 432
+Underfull \vbox (badness 10000) detected at line 678
  []
 
-[9]
-Underfull \vbox (badness 10000) detected at line 432
- []
-
-
-Underfull \vbox (badness 10000) detected at line 432
- []
-
-[10] [11] (./assignment2.aux)
+[16] [17] (./assignment2.aux)
 runsystem(rm assignment2.pyg)...executed.
 
  ) 
 Here is how much of TeX's memory you used:
- 5374 strings out of 492616
- 93322 string characters out of 6129482
- 230476 words of memory out of 5000000
- 9215 multiletter control sequences out of 15000+600000
+ 5378 strings out of 492616
+ 93655 string characters out of 6129482
+ 264551 words of memory out of 5000000
+ 9216 multiletter control sequences out of 15000+600000
  10430 words of font info for 39 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,10n,39p,845b,599s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,10n,39p,845b,601s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb
 ></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
@@ -396,10 +429,10 @@ exlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texl
 ive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
 ve/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive
 /2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on assignment2.pdf (11 pages, 154684 bytes).
+Output written on assignment2.pdf (17 pages, 162457 bytes).
 PDF statistics:
- 92 PDF objects out of 1000 (max. 8388607)
- 65 compressed objects within 1 object stream
+ 111 PDF objects out of 1000 (max. 8388607)
+ 78 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

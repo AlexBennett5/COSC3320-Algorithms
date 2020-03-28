@@ -1,0 +1,208 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{java.util.Random}\PYG{p}{;}
+
+\PYG{k+kd}{class} \PYG{n+nc}{Node} \PYG{p}{\PYGZob{}}
+	\PYG{k+kt}{int} \PYG{n}{val}\PYG{p}{;}
+	\PYG{k+kt}{int}\PYG{o}{[]} \PYG{n}{matrix}\PYG{p}{;}
+	\PYG{n}{Node} \PYG{n}{left}\PYG{p}{;}
+	\PYG{n}{Node} \PYG{n}{right}\PYG{p}{;}
+	\PYG{k+kt}{int} \PYG{n}{height}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{class} \PYG{n+nc}{AVLtree} \PYG{p}{\PYGZob{}}
+	\PYG{k+kt}{int} \PYG{n}{M\PYGZus{}0} \PYG{o}{=} \PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{pow}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{20}\PYG{p}{);}
+	\PYG{k+kt}{int} \PYG{n}{M\PYGZus{}1} \PYG{o}{=} \PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)} \PYG{p}{(}\PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{pow}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{19}\PYG{p}{)} \PYG{o}{+} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{pow}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{18}\PYG{p}{));}
+	\PYG{k+kt}{int} \PYG{n}{M\PYGZus{}2} \PYG{o}{=} \PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)} \PYG{p}{(}\PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{pow}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{18}\PYG{p}{)} \PYG{o}{+} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{pow}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{17}\PYG{p}{));}
+	\PYG{k+kt}{int} \PYG{n}{inserts} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;}
+	\PYG{k+kt}{int} \PYG{n}{deletes} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;}
+	\PYG{k+kt}{int} \PYG{n}{nodes} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;}
+	\PYG{n}{Node} \PYG{n}{root}\PYG{p}{;}
+
+	\PYG{k+kd}{public} \PYG{k+kt}{void} \PYG{n+nf}{AVLtree}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+		\PYG{k}{this}\PYG{p}{.}\PYG{n+na}{root} \PYG{o}{=} \PYG{k+kc}{null}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{public} \PYG{k+kt}{void} \PYG{n+nf}{AVL\PYGZus{}insert}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{a}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{this}\PYG{p}{.}\PYG{n+na}{root} \PYG{o}{=} \PYG{n}{insert}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{k}{this}\PYG{p}{.}\PYG{n+na}{root}\PYG{p}{);}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{public} \PYG{k+kt}{void} \PYG{n+nf}{AVL\PYGZus{}remove}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{a}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{this}\PYG{p}{.}\PYG{n+na}{root} \PYG{o}{=} \PYG{n}{remove}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{k}{this}\PYG{p}{.}\PYG{n+na}{root}\PYG{p}{);}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{public} \PYG{k+kt}{int} \PYG{n+nf}{getNodeCount}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+		\PYG{k}{return} \PYG{k}{this}\PYG{p}{.}\PYG{n+na}{nodes}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{public} \PYG{k+kt}{int} \PYG{n+nf}{getInserts}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+		\PYG{k}{return} \PYG{k}{this}\PYG{p}{.}\PYG{n+na}{inserts}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{public} \PYG{k+kt}{int} \PYG{n+nf}{getDeletes}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+		\PYG{k}{return} \PYG{k}{this}\PYG{p}{.}\PYG{n+na}{deletes}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{public} \PYG{k+kt}{void} \PYG{n+nf}{resetInsertCount}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+		\PYG{k}{this}\PYG{p}{.}\PYG{n+na}{inserts} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{private} \PYG{n}{Node} \PYG{n+nf}{insert}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{a}\PYG{p}{,} \PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k+kt}{int} \PYG{n}{mod} \PYG{o}{=} \PYG{n}{a} \PYG{o}{\PYGZpc{}} \PYG{l+m+mi}{3}\PYG{p}{;}
+
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{b} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{k}{this}\PYG{p}{.}\PYG{n+na}{inserts}\PYG{o}{++}\PYG{p}{;}
+			\PYG{n}{b} \PYG{o}{=} \PYG{k}{new} \PYG{n}{Node}\PYG{p}{();}
+			\PYG{k}{this}\PYG{p}{.}\PYG{n+na}{nodes}\PYG{o}{++}\PYG{p}{;}
+
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{height} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{=} \PYG{k+kc}{null}\PYG{p}{;}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{k+kc}{null}\PYG{p}{;}
+
+			\PYG{k}{if} \PYG{p}{(}\PYG{n}{mod} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+				\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{matrix} \PYG{o}{=} \PYG{k}{new} \PYG{k+kt}{int}\PYG{o}{[}\PYG{n}{M\PYGZus{}0}\PYG{o}{]}\PYG{p}{;}
+			\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{k}{if} \PYG{p}{(}\PYG{n}{mod} \PYG{o}{==} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+				\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{matrix} \PYG{o}{=} \PYG{k}{new} \PYG{k+kt}{int}\PYG{o}{[}\PYG{n}{M\PYGZus{}1}\PYG{o}{]}\PYG{p}{;}
+			\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}}
+				\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{matrix} \PYG{o}{=} \PYG{k}{new} \PYG{k+kt}{int}\PYG{o}{[}\PYG{n}{M\PYGZus{}2}\PYG{o}{]}\PYG{p}{;}
+			\PYG{p}{\PYGZcb{}}
+		\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{k}{if} \PYG{p}{(}\PYG{n}{a} \PYG{o}{\PYGZlt{}} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{val}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{=} \PYG{n}{insert}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{);}
+
+			\PYG{k}{if} \PYG{p}{(}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{)} \PYG{o}{==} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+				\PYG{k}{if} \PYG{p}{(}\PYG{n}{a} \PYG{o}{\PYGZlt{}} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{.}\PYG{n+na}{val}\PYG{p}{)} \PYG{n}{b} \PYG{o}{=} \PYG{n}{singRightRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+				\PYG{k}{else} \PYG{n}{b} \PYG{o}{=} \PYG{n}{doubRightRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+			\PYG{p}{\PYGZcb{}}
+		\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{k}{if} \PYG{p}{(}\PYG{n}{a} \PYG{o}{\PYGZgt{}} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{val}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{n}{insert}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{);}
+			\PYG{k}{if} \PYG{p}{(}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{)} \PYG{o}{==} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+				\PYG{k}{if} \PYG{p}{(}\PYG{n}{a} \PYG{o}{\PYGZgt{}} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{.}\PYG{n+na}{val}\PYG{p}{)} \PYG{n}{b} \PYG{o}{=} \PYG{n}{singLeftRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+				\PYG{k}{else} \PYG{n}{b} \PYG{o}{=} \PYG{n}{doubLeftRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+			\PYG{p}{\PYGZcb{}}
+		\PYG{p}{\PYGZcb{}}
+
+		\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{height} \PYG{o}{=} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{max}\PYG{p}{(}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{),} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{))} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{;}
+		\PYG{k}{return} \PYG{n}{b}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{private} \PYG{n}{Node} \PYG{n+nf}{singRightRotate}\PYG{p}{(}\PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+	
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{b} \PYG{o}{==} \PYG{k+kc}{null} \PYG{o}{||} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{k}{return} \PYG{n}{b}\PYG{p}{;}
+		\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}}
+			\PYG{n}{Node} \PYG{n}{temp} \PYG{o}{=} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{;}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{=} \PYG{n}{temp}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{;}
+			\PYG{n}{temp}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{n}{b}\PYG{p}{;}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{height} \PYG{o}{=} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{max}\PYG{p}{(}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{),} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{))} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{;}
+			\PYG{n}{temp}\PYG{p}{.}\PYG{n+na}{height} \PYG{o}{=} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{max}\PYG{p}{(}\PYG{n}{height}\PYG{p}{(}\PYG{n}{temp}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{),} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{height}\PYG{p}{)} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{;}
+			\PYG{k}{return} \PYG{n}{temp}\PYG{p}{;}
+		\PYG{p}{\PYGZcb{}}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{private} \PYG{n}{Node} \PYG{n+nf}{singLeftRotate}\PYG{p}{(}\PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{b} \PYG{o}{==} \PYG{k+kc}{null} \PYG{o}{||} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{k}{return} \PYG{n}{b}\PYG{p}{;}
+		\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}}
+			\PYG{n}{Node} \PYG{n}{temp} \PYG{o}{=} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{;}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{n}{temp}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{;}
+			\PYG{n}{temp}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{=} \PYG{n}{b}\PYG{p}{;}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{height} \PYG{o}{=} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{max}\PYG{p}{(}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{),} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{))} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{;}
+			\PYG{n}{temp}\PYG{p}{.}\PYG{n+na}{height} \PYG{o}{=} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{max}\PYG{p}{(}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{),} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{height}\PYG{p}{)} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{;}
+			\PYG{k}{return} \PYG{n}{temp}\PYG{p}{;}
+		\PYG{p}{\PYGZcb{}}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{private} \PYG{n}{Node} \PYG{n+nf}{doubLeftRotate}\PYG{p}{(}\PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{n}{singRightRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{);}
+		\PYG{k}{return} \PYG{n}{singLeftRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{private} \PYG{n}{Node} \PYG{n+nf}{doubRightRotate}\PYG{p}{(}\PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{=} \PYG{n}{singLeftRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{);}
+		\PYG{k}{return} \PYG{n}{singRightRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{private} \PYG{n}{Node} \PYG{n+nf}{remove}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{a}\PYG{p}{,} \PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{n}{Node} \PYG{n}{temp}\PYG{p}{;}
+
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{b} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{k}{return} \PYG{k+kc}{null}\PYG{p}{;}
+		\PYG{k}{else} \PYG{k}{if} \PYG{p}{(}\PYG{n}{a} \PYG{o}{\PYGZlt{}} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{val}\PYG{p}{)} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{=} \PYG{n}{remove}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{);}
+		\PYG{k}{else} \PYG{k}{if} \PYG{p}{(}\PYG{n}{a} \PYG{o}{\PYGZgt{}} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{val}\PYG{p}{)} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{n}{remove}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{);}
+		\PYG{k}{else} \PYG{k}{if} \PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{!=} \PYG{k+kc}{null} \PYG{o}{\PYGZam{}\PYGZam{}} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{!=} \PYG{k+kc}{null}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{temp} \PYG{o}{=} \PYG{n}{findMin}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{);}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{val} \PYG{o}{=} \PYG{n}{temp}\PYG{p}{.}\PYG{n+na}{val}\PYG{p}{;}
+			\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{=} \PYG{n}{remove}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{val}\PYG{p}{,} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{);}
+		\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}}
+			\PYG{n}{temp} \PYG{o}{=} \PYG{n}{b}\PYG{p}{;}
+			\PYG{k}{if} \PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{n}{b} \PYG{o}{=} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{;}
+			\PYG{k}{else} \PYG{k}{if} \PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{n}{b} \PYG{o}{=} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{;}
+
+			\PYG{k}{this}\PYG{p}{.}\PYG{n+na}{nodes}\PYG{o}{\PYGZhy{}\PYGZhy{}}\PYG{p}{;}
+			\PYG{k}{this}\PYG{p}{.}\PYG{n+na}{deletes}\PYG{o}{++}\PYG{p}{;}
+		\PYG{p}{\PYGZcb{}}
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{b} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{k}{return} \PYG{n}{b}\PYG{p}{;}
+
+		\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{height} \PYG{o}{=} \PYG{n}{Math}\PYG{p}{.}\PYG{n+na}{max}\PYG{p}{(}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{),} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{))} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{;}
+
+		\PYG{k}{if} \PYG{p}{((}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{))} \PYG{o}{==} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{k}{if} \PYG{p}{((}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{))} \PYG{o}{==} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{k}{return} \PYG{n}{singLeftRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+			\PYG{k}{else} \PYG{k}{return} \PYG{n}{doubLeftRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+		\PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{k}{if} \PYG{p}{((}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{))} \PYG{o}{==} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{k}{if} \PYG{p}{((}\PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{height}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{right}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{))} \PYG{o}{==} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{k}{return} \PYG{n}{singRightRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+			\PYG{k}{else} \PYG{k}{return} \PYG{n}{doubRightRotate}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}
+		\PYG{p}{\PYGZcb{}}
+		\PYG{k}{return} \PYG{n}{b}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{private} \PYG{n}{Node} \PYG{n+nf}{findMin}\PYG{p}{(}\PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{b} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{k}{return} \PYG{k+kc}{null}\PYG{p}{;}
+		\PYG{k}{else} \PYG{k}{if} \PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left} \PYG{o}{==} \PYG{k+kc}{null}\PYG{p}{)} \PYG{k}{return} \PYG{n}{b}\PYG{p}{;}
+		\PYG{k}{else} \PYG{k}{return} \PYG{n}{findMin}\PYG{p}{(}\PYG{n}{b}\PYG{p}{.}\PYG{n+na}{left}\PYG{p}{);}
+	\PYG{p}{\PYGZcb{}}
+
+	\PYG{k+kd}{private} \PYG{k+kt}{int} \PYG{n+nf}{height}\PYG{p}{(}\PYG{n}{Node} \PYG{n}{b}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{k}{return} \PYG{p}{(}\PYG{n}{b} \PYG{o}{==} \PYG{k+kc}{null} \PYG{o}{?} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1} \PYG{p}{:} \PYG{n}{b}\PYG{p}{.}\PYG{n+na}{height}\PYG{p}{);}
+	\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{public} \PYG{k+kd}{class} \PYG{n+nc}{Prog3} \PYG{p}{\PYGZob{}}
+
+	\PYG{k+kd}{public} \PYG{k+kd}{static} \PYG{k+kt}{void} \PYG{n+nf}{main}\PYG{p}{(}\PYG{n}{String}\PYG{o}{[]} \PYG{n}{args}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+	
+		\PYG{n}{AVLtree} \PYG{n}{tree} \PYG{o}{=} \PYG{k}{new} \PYG{n}{AVLtree}\PYG{p}{();}
+		\PYG{n}{Random} \PYG{n}{r} \PYG{o}{=} \PYG{k}{new} \PYG{n}{Random}\PYG{p}{();}
+
+		\PYG{k+kt}{double} \PYG{n}{begin} \PYG{o}{=} \PYG{n}{System}\PYG{p}{.}\PYG{n+na}{currentTimeMillis}\PYG{p}{();}
+
+		\PYG{k}{while}\PYG{p}{(}\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{getNodeCount}\PYG{p}{()} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{50}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{AVL\PYGZus{}insert}\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n+na}{nextInt}\PYG{p}{(}\PYG{l+m+mi}{299}\PYG{p}{));}
+		\PYG{p}{\PYGZcb{}}
+
+		\PYG{k+kt}{double} \PYG{n}{initialTime} \PYG{o}{=} \PYG{n}{System}\PYG{p}{.}\PYG{n+na}{currentTimeMillis}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{begin}\PYG{p}{;}
+
+		\PYG{k+kt}{double} \PYG{n}{insertTime}\PYG{p}{,} \PYG{n}{removeTime}\PYG{p}{;}
+		\PYG{n}{insertTime} \PYG{o}{=} \PYG{n}{removeTime} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;}
+
+		\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{resetInsertCount}\PYG{p}{();}
+
+		\PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{i} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{100000}\PYG{p}{;} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+
+			\PYG{k}{while} \PYG{p}{(}\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{getNodeCount}\PYG{p}{()} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{50}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+				\PYG{n}{begin} \PYG{o}{=} \PYG{n}{System}\PYG{p}{.}\PYG{n+na}{currentTimeMillis}\PYG{p}{();}
+				\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{AVL\PYGZus{}insert}\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n+na}{nextInt}\PYG{p}{(}\PYG{l+m+mi}{299}\PYG{p}{));}
+				\PYG{n}{insertTime} \PYG{o}{+=} \PYG{p}{(}\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{currentTimeMillis}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{begin}\PYG{p}{);}
+			\PYG{p}{\PYGZcb{}}
+
+			\PYG{k}{while} \PYG{p}{(}\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{getNodeCount}\PYG{p}{()} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{50}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+				\PYG{n}{begin} \PYG{o}{=} \PYG{n}{System}\PYG{p}{.}\PYG{n+na}{currentTimeMillis}\PYG{p}{();}
+				\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{AVL\PYGZus{}remove}\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n+na}{nextInt}\PYG{p}{(}\PYG{l+m+mi}{299}\PYG{p}{));}
+				\PYG{n}{removeTime} \PYG{o}{+=} \PYG{p}{(}\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{currentTimeMillis}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{begin}\PYG{p}{);}
+			\PYG{p}{\PYGZcb{}}
+		\PYG{p}{\PYGZcb{}}
+
+		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Average time for initial insertion: \PYGZdq{}} \PYG{o}{+} \PYG{p}{(}\PYG{n}{initialTime}\PYG{o}{/}\PYG{l+m+mi}{50}\PYG{p}{)} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
+		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Average time for insertions: \PYGZdq{}} \PYG{o}{+} \PYG{p}{(}\PYG{n}{insertTime}\PYG{o}{/}\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{getInserts}\PYG{p}{())} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
+		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Average time for removals: \PYGZdq{}} \PYG{o}{+} \PYG{p}{(}\PYG{n}{removeTime}\PYG{o}{/}\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{getDeletes}\PYG{p}{())} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
+	\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

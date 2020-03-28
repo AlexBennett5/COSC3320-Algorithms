@@ -35,7 +35,7 @@ Since this algorithm will be iterated over 3 nested for-loops the time complexit
 
 \subsection*{Procedure}
 
-In this program we use three two-dimensional arrays $X, Y, \text{ and } Z$, each of size $n$, with $X \text{ and } Y$ initialized to 1 for each entry. We then add corresponding entries of $X \text{ and } Y$ together via matrix addition to generate an entry in $Z$. We use two different algorithms to perform the addition, the first traversing the arrays in row-major order and the second traversing them in column-major order, and compare their timings.
+In this program we use three two-dimensional arrays $X, Y, \text{ and } Z$, each of size $n$, with $X \text{ and } Y$ initialized to 1 for each entry. We then add corresponding entries of $X \text{ and } Y$ together via matrix addition to generate an entry in $Z$. We use two different algorithms to perform the addition, the first traversing the arrays in row-major order and the second traversing them in column-major order, and compare their timings. The program is written in C++ and run on a MacOS supporting VMM.
 
 \subsection*{Hypothesis}
 
@@ -138,7 +138,11 @@ My hypothesis was correct: there was a substantial difference in timing between 
 
 \subsection*{Procedure}
 
+In this program we take an $n$ by $n$ matrix, initializing each entry to zero, then perform $m$ simple operations (adding a random number between 0-100 to a random entry in the matrix) for $m = 1677721600$ and $m = 13421772800$. The program is written in Java and run on a MacOS supporting VMM.
+
 \subsection*{Hypothesis}
+
+The algorithm is fairly simple, performing $m$ computations on the same matrix. However since we will be dealing with fairly large matrices, I expect that for certain values of $n$ the program will exceed physical memory and thus require the VMM to transfer data to disk storage. My hypothesis is that the timing of the program will jump up dramatically for particular $n$, and all larger $n$ will take significantly more time.
 
 \subsection*{Java Implementation}
 
@@ -224,7 +228,251 @@ n & Time for m=1677721600 (ms) & Time for m=13421772800 (ms) \\
 
 \subsection*{Explanation}
 
+My hypothesis was correct: for the first three values of $n$ the program took roughly the same amount of time to execute. But with $n=1024$ the timing increased dramatically. Larger values of $n$ took significantly longer as well. Interestingly the jump between $n=1024$ and $n=4096$ was much greater than the jump between $n=4096$ and $n=16384$. As I predicted in the hypothesis, the program ran out of physical memory and had to utilize the VMM to transfer data stored in RAM into disk storage. This swapping time accounts for the increase in execution time for larger values of $n$.
+
 \section*{Programming Problem 3}
+
+\subsection*{Procedure}
+
+\subsection*{Hypothesis}
+
+\subsection*{Java Implementation}
+
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=lightgray,
+fontsize=\footnotesize,
+linenos,
+breaklines
+]
+{Java}
+
+import java.util.Random;
+
+class Node {
+	int val;
+	int[] matrix;
+	Node left;
+	Node right;
+	int height;
+}
+
+class AVLtree {
+	int M_0 = (int) Math.pow(2, 20);
+	int M_1 = (int) (Math.pow(2, 19) + Math.pow(2, 18));
+	int M_2 = (int) (Math.pow(2, 18) + Math.pow(2, 17));
+	int inserts = 0;
+	int deletes = 0;
+	int nodes = 0;
+	Node root;
+
+	public void AVLtree() {
+		this.root = null;
+	}
+
+	public void AVL_insert(int a) {
+		this.root = insert(a, this.root);
+	}
+
+	public void AVL_remove(int a) {
+		this.root = remove(a, this.root);
+	}
+
+	public int getNodeCount() {
+		return this.nodes;
+	}
+
+	public int getInserts() {
+		return this.inserts;
+	}
+
+	public int getDeletes() {
+		return this.deletes;
+	}
+
+	public void resetInsertCount() {
+		this.inserts = 0;
+	}
+
+	private Node insert(int a, Node b) {
+		int mod = a % 3;
+
+		if (b == null) {
+			this.inserts++;
+			b = new Node();
+			this.nodes++;
+
+			b.height = 0;
+			b.left = null;
+			b.right = null;
+
+			if (mod == 0) {
+				b.matrix = new int[M_0];
+			} else if (mod == 1) {
+				b.matrix = new int[M_1];
+			} else {
+				b.matrix = new int[M_2];
+			}
+		} else if (a < b.val) {
+			b.left = insert(a, b.left);
+
+			if (height(b.left) - height(b.right) == 2) {
+				if (a < b.left.val) b = singRightRotate(b);
+				else b = doubRightRotate(b);
+			}
+		} else if (a > b.val) {
+			b.right = insert(a, b.right);
+			if (height(b.right) - height(b.left) == 2) {
+				if (a > b.right.val) b = singLeftRotate(b);
+				else b = doubLeftRotate(b);
+			}
+		}
+
+		b.height = Math.max(height(b.left), height(b.right)) + 1;
+		return b;
+	}
+
+	private Node singRightRotate(Node b) {
+	
+		if (b == null || b.left == null) {
+			return b;
+		} else {
+			Node temp = b.left;
+			b.left = temp.right;
+			temp.right = b;
+			b.height = Math.max(height(b.left), height(b.right)) + 1;
+			temp.height = Math.max(height(temp.left), b.height) + 1;
+			return temp;
+		}
+	}
+
+	private Node singLeftRotate(Node b) {
+
+		if (b == null || b.right == null) {
+			return b;
+		} else {
+			Node temp = b.right;
+			b.right = temp.left;
+			temp.left = b;
+			b.height = Math.max(height(b.left), height(b.right)) + 1;
+			temp.height = Math.max(height(b.right), b.height) + 1;
+			return temp;
+		}
+	}
+
+	private Node doubLeftRotate(Node b) {
+		b.right = singRightRotate(b.right);
+		return singLeftRotate(b);
+	}
+
+	private Node doubRightRotate(Node b) {
+		b.left = singLeftRotate(b.left);
+		return singRightRotate(b);
+	}
+
+	private Node remove(int a, Node b) {
+		Node temp;
+
+		if (b == null) return null;
+		else if (a < b.val) b.left = remove(a, b.left);
+		else if (a > b.val) b.right = remove(a, b.right);
+		else if (b.left != null && b.right != null) {
+			temp = findMin(b.right);
+			b.val = temp.val;
+			b.right = remove(b.val, b.right);
+		} else {
+			temp = b;
+			if (b.left == null) b = b.right;
+			else if (b.right == null) b = b.left;
+
+			this.nodes--;
+			this.deletes++;
+		}
+		if (b == null) return b;
+
+		b.height = Math.max(height(b.left), height(b.right)) + 1;
+
+		if ((height(b.left) - height(b.right)) == 2) {
+			if ((height(b.left.left) - height(b.left.right)) == 1) return singLeftRotate(b);
+			else return doubLeftRotate(b);
+		} else if ((height(b.right) - height(b.left)) == 2) {
+			if ((height(b.right.right) - height(b.right.left)) == 1) return singRightRotate(b);
+			else return doubRightRotate(b);
+		}
+		return b;
+	}
+
+	private Node findMin(Node b) {
+		if (b == null) return null;
+		else if (b.left == null) return b;
+		else return findMin(b.left);
+	}
+
+	private int height(Node b) {
+		return (b == null ? -1 : b.height);
+	}
+}
+
+public class Prog3 {
+
+	public static void main(String[] args) {
+	
+		AVLtree tree = new AVLtree();
+		Random r = new Random();
+
+		double begin = System.currentTimeMillis();
+
+		while(tree.getNodeCount() < 50) {
+			tree.AVL_insert(r.nextInt(299));
+		}
+
+		double initialTime = System.currentTimeMillis() - begin;
+
+		double insertTime, removeTime;
+		insertTime = removeTime = 0;
+
+		tree.resetInsertCount();
+
+		for (int i = 0; i < 100000; i++) {
+
+			while (tree.getNodeCount() < 50) {
+				begin = System.currentTimeMillis();
+				tree.AVL_insert(r.nextInt(299));
+				insertTime += (System.currentTimeMillis() - begin);
+			}
+
+			while (tree.getNodeCount() >= 50) {
+				begin = System.currentTimeMillis();
+				tree.AVL_remove(r.nextInt(299));
+				removeTime += (System.currentTimeMillis() - begin);
+			}
+		}
+
+		System.out.println("Average time for initial insertion: " + (initialTime/50) + " ms");
+		System.out.println("Average time for insertions: " + (insertTime/tree.getInserts()) + " ms");
+		System.out.println("Average time for removals: " + (removeTime/tree.getDeletes()) + " ms");
+	}
+}
+
+\end{minted}
+
+\subsection*{Results}
+
+\begin{center}
+\begin{tabular}{c c}
+\hline
+Average time for initial insertion & 1.8 ms \\
+Average time for subsequent insertions & 0.3037 ms \\
+Average time for removals & 0.03291 ms \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Explanation}
+
 
 \section*{Programming Problem 4}
 

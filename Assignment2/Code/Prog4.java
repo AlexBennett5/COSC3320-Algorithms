@@ -15,7 +15,8 @@ public class Prog4 {
 
 		for (int i = 0; i < 15; i++) {
 			System.out.println("-----------------------\n" + "Cache Size: " + C[i] + "*M");
-			long start = System.currentTimeMillis();
+
+			double start = System.currentTimeMillis();
 
 			int numBytes = Math.abs((int)(C[i] * (freeBytes)));
 			int size = numBytes/4;
@@ -25,6 +26,7 @@ public class Prog4 {
 			System.out.println("Virtual Mem: " + opsys.getCommittedVirtualMemorySize());
 			System.out.println("Free swap space: " + opsys.getFreeSwapSpaceSize());
 			
+
 			for (int j = 0; j < size; j++) {
 				testArr[j] = i + 1;
 			}
@@ -32,7 +34,7 @@ public class Prog4 {
 				testArr[j] -= 2;
 			}
 			
-			System.out.println("Time elapsed: " + ((double) System.currentTimeMillis() - start) + " milliseconds");
+			System.out.println("Time elapsed: " + (System.currentTimeMillis() - start) + " ms");
 
 		}
 	
