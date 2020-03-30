@@ -200,8 +200,11 @@
 			\PYG{p}{\PYGZcb{}}
 		\PYG{p}{\PYGZcb{}}
 
+		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Total time for initial insertion: \PYGZdq{}} \PYG{o}{+} \PYG{n}{initialTime} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
 		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Average time for initial insertion: \PYGZdq{}} \PYG{o}{+} \PYG{p}{(}\PYG{n}{initialTime}\PYG{o}{/}\PYG{l+m+mi}{50}\PYG{p}{)} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
+		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Total time for subsequent insertions: \PYGZdq{}} \PYG{o}{+} \PYG{n}{insertTime} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
 		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Average time for insertions: \PYGZdq{}} \PYG{o}{+} \PYG{p}{(}\PYG{n}{insertTime}\PYG{o}{/}\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{getInserts}\PYG{p}{())} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
+		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Total time for removals: \PYGZdq{}} \PYG{o}{+} \PYG{n}{removeTime} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
 		\PYG{n}{System}\PYG{p}{.}\PYG{n+na}{out}\PYG{p}{.}\PYG{n+na}{println}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Average time for removals: \PYGZdq{}} \PYG{o}{+} \PYG{p}{(}\PYG{n}{removeTime}\PYG{o}{/}\PYG{n}{tree}\PYG{p}{.}\PYG{n+na}{getDeletes}\PYG{p}{())} \PYG{o}{+} \PYG{l+s}{\PYGZdq{} ms\PYGZdq{}}\PYG{p}{);}
 	\PYG{p}{\PYGZcb{}}
 \PYG{p}{\PYGZcb{}}

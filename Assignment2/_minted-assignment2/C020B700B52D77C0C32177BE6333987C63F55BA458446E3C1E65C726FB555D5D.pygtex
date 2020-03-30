@@ -1,0 +1,21 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{Linked\PYGZus{}List\PYGZus{}Compare}\PYG{p}{(}\PYG{n}{list} \PYG{n}{L\PYGZus{}1}\PYG{p}{,} \PYG{n}{list} \PYG{n}{L\PYGZus{}2}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+
+	\PYG{n}{node} \PYG{n}{temp1} \PYG{o}{=} \PYG{n}{L\PYGZus{}1}\PYG{p}{;}
+
+	\PYG{k}{while} \PYG{p}{(}\PYG{n}{temp1} \PYG{o}{!=} \PYG{n}{NULL}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+		\PYG{n}{node} \PYG{n}{temp2} \PYG{o}{=} \PYG{n}{L\PYGZus{}2}\PYG{p}{;}
+		
+		\PYG{k}{while}\PYG{p}{(}\PYG{n}{temp2} \PYG{o}{!=} \PYG{n}{NULL}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+			\PYG{k}{if} \PYG{p}{(}\PYG{n}{temp1} \PYG{o}{==} \PYG{n}{temp2}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+				\PYG{k}{return} \PYG{k+kc}{true}
+			\PYG{p}{\PYGZcb{}}
+			\PYG{n}{temp1} \PYG{o}{=} \PYG{n}{temp1}\PYG{o}{\PYGZhy{}\PYGZgt{}}\PYG{n}{next}\PYG{p}{;}
+		\PYG{p}{\PYGZcb{}}
+		
+		\PYG{n}{temp1} \PYG{o}{=} \PYG{n}{temp1}\PYG{o}{\PYGZhy{}\PYGZgt{}}\PYG{n}{next}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}		
+	
+	\PYG{k}{return} \PYG{k+kc}{false}\PYG{p}{;}	
+\PYG{p}{\PYGZcb{}}	
+\end{Verbatim}

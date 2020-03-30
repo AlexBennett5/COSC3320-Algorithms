@@ -199,8 +199,11 @@ public class Prog3 {
 			}
 		}
 
+		System.out.println("Total time for initial insertion: " + initialTime + " ms");
 		System.out.println("Average time for initial insertion: " + (initialTime/50) + " ms");
+		System.out.println("Total time for subsequent insertions: " + insertTime + " ms");
 		System.out.println("Average time for insertions: " + (insertTime/tree.getInserts()) + " ms");
+		System.out.println("Total time for removals: " + removeTime + " ms");
 		System.out.println("Average time for removals: " + (removeTime/tree.getDeletes()) + " ms");
 	}
 }
