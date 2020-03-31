@@ -16,5 +16,7 @@
 			\PYG{n}{avg}\PYG{o}{[}\PYG{n}{i}\PYG{o}{][}\PYG{n}{j}\PYG{o}{]} \PYG{o}{/=} \PYG{n}{k\PYGZus{}count}\PYG{p}{;}
 		\PYG{p}{\PYGZcb{}}
 	\PYG{p}{\PYGZcb{}}
+	
+	\PYG{k}{return} \PYG{n}{avg}\PYG{p}{;}
 \PYG{p}{\PYGZcb{}}
 \end{Verbatim}

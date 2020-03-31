@@ -14,9 +14,13 @@
 \section*{Theory Problem 1}
 
 \subsection*{(a)}
-To check if an element in $L_1$ is in $L_2$ we must iterate over each element of $L_1$ ($n$ elements), and then compare each element of $L_1$ with every element of $L_2$. Thus the lower bound is $O(n^2)$.
+To check if any element in $L_1$ is in $L_2$ we must iterate over each element of $L_1$ (size $n$), and then compare each element of $L_1$ with every element of $L_2$ (size $n$). This would be comprised of two nested loops and thus would have a lower bound of $O(n^2)$.
 
 \subsection*{(b)}
+
+The algorithm to implement the above is quite simple: we iterate over one list, starting with the head node, and compare that node with the nodes (not elements) of the second until we reach the end of the second list. If at any point there's a successful comparison, we return true, otherwise return false. Since we use two nested while-loops that iterate over the two lists the time complexity is $O(n^2)$ in the worst case.
+
+The algorithm in pseudocode:
 
 \begin{minted}
 [
@@ -32,21 +36,19 @@ breaklines
 
 Linked_List_Compare(list L_1, list L_2) {
 
-	node temp1 = L_1;
+	node temp1 = L_1.head;
 
 	while (temp1 != NULL) {
-		node temp2 = L_2;
+		node temp2 = L_2.head;
 		
 		while(temp2 != NULL) {
 			if (temp1 == temp2) {
 				return true
 			}
-			temp1 = temp1->next;
+			temp2 = temp2->next;
 		}
-		
 		temp1 = temp1->next;
 	}		
-	
 	return false;	
 }	
 
@@ -54,22 +56,22 @@ Linked_List_Compare(list L_1, list L_2) {
 
 \section*{Theory Problem 2}
 
-The insert and delete functions will be identical to the standard implementation of AVL trees except we will modify the insert and delete functions to include a shift() function that will shift the nodes based on $\lceil \frac{n}{3} \rceil$.
+The insert and delete functions will be identical to the standard implementation of AVL trees except we will modify the insert and delete functions to include a \textit{shift}() function that will shift the nodes based on $\lceil \frac{n}{3} \rceil$.
 
-The algorithm for shift(node) is: if the node's value is greater than $\lceil \frac{n}{3} \rceil$, then shift(node.right), move the node to the left subtree, shift node.right to the root, and then rebalance. If the node's value is less than $\lceil \frac{n}{3} \rceil$, then shift(node.left), move the node to the right subtree, shift node.left to the root, and then rebalance.
+The algorithm for \textit{shift}(node) is: if the node's value is greater than $\lceil \frac{n}{3} \rceil$, then \textit{shift}(node.right), move the node to the left subtree, move node.right to the root, and then rebalance. If the new node's value is less than $\lceil \frac{n}{3} \rceil$, then \textit{shift}(node.left), move the node to the right subtree, move node.left to the root, and then rebalance.
 
-Then the find($\lceil \frac{n}{3} \rceil$) function can be executed in constant time ($O(1)$) since it only has to access the root node. The tradeoff is that the addition of the shift() function to insert and delete makes those function calls slower than $O(\log n)$. The space complexity will be the same for insert and delete as in the original algorithms (that is, $O(\log n)$) while the find() function will have a space complexity of $O(1)$.
+Consequently the \textit{find}($\lceil \frac{n}{3} \rceil$) function can be executed in constant time ($O(1)$) since it only has to access the root node. The tradeoff is that the addition of the \textit{shift}() function to insert and delete makes those function calls slower than $O(\log_2 n)$. The space complexity will be the same for insert and delete as in the original algorithms (that is, $O(\log_2 n)$) while the \textit{find}() function will have a space complexity of $O(1)$.
 
 \section*{Theory Problem 3}
 
-To determine the average number of scalar multiplications for a sequence of $n$ matrices we will use the following informal algorithm:
+To determine the average number of scalar multiplications for a sequence of $n$ matrices we will use the following rule we learned in class:
 
 $ S[i,i] = 0 \\ S[i,i+1] = p_i + p_{i+1} + p_{i+2} \\
 S[i,j] = \operatorname{avg}(S[i,k] + S[k+1,j] + p_i + p_{k+1} + p_{k+1}), \text{ for } i \leq k \leq j-1 $
 
-Where $S[i,j]$ is the matrix representing the average work for a parentheses configuration grouping every element from $i$ to $j$ and $p_i$ represents the $i$th dimension of the original matrix sequence. The average work is equal to the sum of scalar multiplications for possible k-values divided by the total number of k-values.
+Where $S[i,j]$ is the matrix representing the average work for a parentheses configuration grouping every element from $i$ to $j$ and $p_i$ represents the $i$th dimension of the original matrix sequence. The "average work" in this case is equal to the sum of scalar multiplications for possible $k$-values divided by the total number of $k$-values.
 
-Written in pseudo-code we get:
+The algorithm to generate those values for $S$ takes an integer array as its argument (the dimensions of the different arrays being multiplied), calculates $S[i,k] + S[k+1,j] + p_i + p_{k+1} + p_{k+1}$ for each $k$-value using three for-loops while keeping track of the number of $k$-values iterated over each loop, then stores the sum of different values of $S[i,k] + S[k+1,j] + p_i + p_{k+1} + p_{k+1}$ for each $k$-value divided by the total number of $k$-values into the corresponding entry of $S$. Written in pseudo-code we get:
 
 \begin{minted}
 [
@@ -100,6 +102,8 @@ average_operations(int[] p) {
 			avg[i][j] /= k_count;
 		}
 	}
+	
+	return avg;
 }
 \end{minted}
 
@@ -206,7 +210,9 @@ Dimension of Array & Time of Vers. 1 (ms) & Time of Vers. 2 (ms) \\
 
 \subsection*{Explanation}
 
-My hypothesis was correct: there was a substantial difference in timing between Version 1 and Version 2. As explained in the hypothesis depending on how programming languages store arrays in memory, row-major and column-major traversals of an array can vary quite significantly in their timings. Since Version 1 (row-major) was much faster than Version 2 (column-major), we can conclude that C++ stores multidimensional arrays in row-major order. In fact this is true for most languages of the C family.
+My hypothesis was correct: there was a substantial difference in timing between Version 1 and Version 2, with Version 2 significantly slower. The difference is marginal for $n=512$ but becomes more noticeable at $n=1024$. For Version 2 the timing for $n=2048$ is over five times as slow as $n=1024$, which is greater than the expected quadrupling from the algorithm. By $n=65536$, the increase is seven and a half times greater than the previous value of $n$. The rate of increase for Version 2 is linear. Compare this to Version 1, the rate of increase of which is a constant quadrupling.
+
+Row-major and column-major traversals of an array can vary quite significantly in their timings depending on how a programming language stores multidimensional arrays in linear storage. Since Version 1 (row-major) was much faster than Version 2 (column-major), we can conclude that C++ stores multidimensional arrays in row-major order. In fact this is true for most programming languages of the C family.
 
 \section*{Programming Problem 2}
 
@@ -216,7 +222,7 @@ In this program we take an $n$ by $n$ matrix, initializing each entry to zero, t
 
 \subsection*{Hypothesis}
 
-The algorithm is fairly simple, performing $m$ computations on the same matrix. However since we will be dealing with fairly large matrices, I expect that for certain values of $n$ the program will exceed physical memory and thus require the VMM to transfer data to disk storage. My hypothesis is that the timing of the program will jump up dramatically for particular $n$, and all larger $n$ will take significantly more time.
+The algorithm is fairly simple, performing $m$ computations on the same matrix, so we might expect a time complexity of $O(m)$. However since we will be dealing with fairly large matrices, I expect that for certain values of $n$ the program will exceed physical memory and thus require the VMM to transfer data to disk storage. My hypothesis is that the timing of the program will jump up dramatically for a particular $n$ value, and all larger $n$ will take significantly more time.
 
 \subsection*{Java Implementation}
 
@@ -292,27 +298,29 @@ n & Time for m=1677721600 (ms) & Time for m=13421772800 (ms) \\
 \hline
 16 & 55336 & 430628 \\
 64 & 55951 & 424845 \\
-256 & 59988 & 445868 \\
-1024 & 121313 & 795774 \\
-4096 & 232810 & 1858610 \\
-16384 & 286520 & 2290697 \\
+256 & 59988 & 445868 \\ 
+1024 & 121313 & 795774 \\ 
+4096 & 232810 & 1858610 \\ 
+16384 & 286520 & 2290697 \\ 
 \hline
 \end{tabular}}
 \end{center}
 
 \subsection*{Explanation}
 
-My hypothesis was correct: for the first three values of $n$ the program took roughly the same amount of time to execute. But with $n=1024$ the timing increased dramatically. Larger values of $n$ took significantly longer as well. Interestingly the jump between $n=1024$ and $n=4096$ was much greater than the jump between $n=4096$ and $n=16384$. As I predicted in the hypothesis, the program ran out of physical memory and had to utilize the VMM to transfer data stored in RAM into disk storage. This swapping time accounts for the increase in execution time for larger values of $n$.
+My hypothesis was correct: for both values of $m$, the timing increases significantly for $n=1024$. For all values of $n$ the timing of $m=13421772800$ is roughly six to eight times $m=1677721600$. For smaller values of the $n$, the timing is dependent on $m$ (the expected $O(m)$ complexity) with little variation variation between $m$-timings for different $n$ values. However at $n=1024$ we see both $m$-timings increase linearly. Interestingly for both $m$ values the jump between $n=1024$ and $n=4096$ was much greater than the jump between $n=4096$ and $n=16384$. 
+
+As I predicted in the hypothesis, the program ran out of physical memory and had to utilize the VMM to transfer data stored in RAM into disk storage. This swapping time accounts for the dramatic increase in execution time for $n \geq 1024$.
 
 \section*{Programming Problem 3}
 
 \subsection*{Procedure}
 
-In this problem we implement the AVL tree data structure with a large matrix as the data for each node. The size of the matrix is determined by a randomly generated number mod 3. In the algorithm itself we first initialize 50 nodes to produce a tree of height 6. We then perform 100,000 random insertions and removals into the tree and compare their timing to the initial insertion of the 50 nodes into the tree.
+In this program we implement the AVL tree data structure with a large matrix as data for each node. The size of the matrix is determined by a randomly generated number modulo 3. The algorithm itself initializes 50 nodes to produce a tree of height 6, and then performs 100,000 random insertions and removals into the tree and compares their timing to the initial insertion of the 50 nodes into the tree.
 
 \subsection*{Hypothesis}
 
-My hypothesis is that insertion of new nodes will generally take longer than removing nodes. This is because the allocation of memory for new nodes will cause memory fragmentation and require garbage collection, whereas the removal of nodes won't be as memory-intensive. 
+My hypothesis is that insertion and removal will take roughly the same amount of time. The time complexity for the standard insertion and removal functions in an AVL tree is $O(\log n)$ and so averaged out over 100,000 operations their timing should end up being fairly similar.
 
 \subsection*{Java Implementation}
 
@@ -557,7 +565,9 @@ Average time for removals & 0.03338 ms \\
 
 \subsection*{Explanation}
 
-My hypothesis was mostly correct. Insertion took more time than removal both overall and on average. However the average time for the initial insertion was greater than the average time for subsequent insertions. Apparently this is due to the Java Virtual Machine using an algorithm that increases the number of sweeps in garbage collection as the amount of the JVM's memory being utilized increases. Thus the process of removing and inserting became faster as the tree became larger. This is a testament to how effective Java's Garbage Collection can be.
+My hypothesis was incorrect. Insertion took more time than removal both overall and on average. This might be due to memory fragmentation, as the  insertion function requires memory to be allocated for additional nodes and thus potentially extensive paging if the program exceeds RAM. The removal function would not have this additional memory cost. 
+
+The average time for the initial insertion was greater than the average time for subsequent insertions as well. Apparently this is because the Java Virtual Machine uses an algorithm that increases the number of sweeps in garbage collection as the amount of the JVM's heap memory increases. Thus up to a point the process of removing and inserting became faster as the tree became larger. This is a testament to the JVM's successful handling of memory fragmentation and compaction.
 
 \section*{Programming Problem 4}
 
@@ -567,7 +577,7 @@ In this program we generate an array of size $C=val*M$, where $M$ is the size of
 
 \subsection*{Hypothesis}
 
-The program is designed such that any value of $C<M$ will be easily handled by the Java Virtual Machine, but for $C>M$ the JVM will be constantly paging and thus thrashing will certainly occur. As such my hypothesis is that the program's timing will increase considerably when $C>M$.
+The program is designed such that any value of $C<M$ will be easily handled by the VMM, but for $C>M$ the VMM will be constantly paging and thus thrashing will likely occur. As such my hypothesis is that the program's timing will increase considerably when $C>M$.
 
 \subsection*{Java Implementation}
 
@@ -634,34 +644,36 @@ public class Prog4 {
 Cache Size & Free Physical Mem (bytes) & Free Virtual Mem (bytes) & Free Swap Space (bytes) & Time (ms) \\ 
 \hline
 Start & 292106240 & 10460585984 & 766246912 & N/A \\
-0.5*M & 142024704 & 10476437504 & 766246912 & 138 \\
-0.6*M & 105308160 & 10485899264 & 766246912 & 98 \\
-0.7*M & 92807168 & 10486038528 & 766246912 & 78 \\
-0.8*M & 78573568 & 10487099392 & 766246912 & 89 \\
-0.9*M & 78573568 & 10488160256 & 766246912 & 102 \\
-0.95*M & 78573568 & 10488160256 & 766246912 & 98 \\
-0.99*M & 78573568 & 10488160256 & 766246912 & 100 \\
-1.0*M & 78573568 & 10496548864 & 766246912 & 99 \\
-1.01*M & 78573568 & 10496548864 & 766246912 & 100 \\
-1.1*M & 78573568 & 10496548864 & 766246912 & 116 \\
-1.5*M & 21618688 & 10496548864 & 766246912 & 187 \\
-2.0*M & 22835200 & 10496548864 & 766246912 & 246 \\
-5.0*M & 23138304 & 10498646016 &  766246912 & 1072 \\
-10.0*M & 23121920 & 10499694592 & 766246912 & 824 \\
-50.0*M & 21336064 & 10499796992 & 766246912 & 663 \\
+$0.5*M$ & 142024704 & 10476437504 & 766246912 & 138 \\
+$0.6*M$ & 105308160 & 10485899264 & 766246912 & 98 \\
+$0.7*M$ & 92807168 & 10486038528 & 766246912 & 78 \\
+$0.8*M$ & 78573568 & 10487099392 & 766246912 & 89 \\
+$0.9*M$ & 78573568 & 10488160256 & 766246912 & 102 \\
+$0.95*M$ & 78573568 & 10488160256 & 766246912 & 98 \\
+$0.99*M$& 78573568 & 10488160256 & 766246912 & 100 \\
+$1.0*M$ & 78573568 & 10496548864 & 766246912 & 99 \\
+$1.01*M$ & 78573568 & 10496548864 & 766246912 & 100 \\
+$1.1*M$& 78573568 & 10496548864 & 766246912 & 116 \\
+$1.5*M$ & 21618688 & 10496548864 & 766246912 & 187 \\
+$2.0*M$ & 22835200 & 10496548864 & 766246912 & 246 \\
+$5.0*M$ & 23138304 & 10498646016 &  766246912 & 1072 \\
+$10.0*M$ & 23121920 & 10499694592 & 766246912 & 824 \\
+$50.0*M$& 21336064 & 10499796992 & 766246912 & 663 \\
 \hline
 \end{tabular}}
 \end{center}
 
 \subsection*{Explanation}
 
-My hypothesis was correct. For $C=0.5*M$ to $C=1.1*M$ the execution time hovers around 100 ms. But the execution time increases considerably once the array size exceeds $1.5*M$. However, the increase is not exponential. This suggests that the MacOSX's VMM replacement policy is effective at dealing with large numbers of swaps.
+My hypothesis was correct. For $C=0.5*M$ to $C=1.1*M$ the execution time hovers around 100 ms, but the execution time increases considerably once the array size exceeds $1.5*M$. Changes in virtual memory are minor and no changes occur for swap space memory.
+
+Bizarrely, while the increase in execution time is not exponential, it is not strictly linear either as $5.0*M$ takes 400 ms longer than $50.0*M$. This suggests that the MacOSX's VMM replacement policy is effective at dealing with large numbers of swaps and that thrashing is not occurring. Perhaps testing for higher values of $C$ would result in a more strictly linear or exponential increase in execution time.
 
 \section*{Programming Problem 5}
 
 \subsection*{Description of algorithm}
 
-Our algorithm for generating an optimal Huffman code works as follows. We first take characters and their frequencies as input from the user. We create tree nodes for each character and its frequency, and store them in a priority queue sorted by frequency. We then take the two least frequent nodes in the queue and construct a new node connecting the two, whose frequency is derived from their two frequencies combined. This new node is added back into the queue. We continue this process until only one node remains. This resultant tree supplies our Huffman encoding.
+The algorithm for generating an optimal Huffman code works as follows. We first take characters and their frequencies as input from the user. We create tree nodes for each character and its frequency, and store them in a priority queue sorted by frequency. We then take the two least frequent nodes in the queue and construct a new node connecting the two, whose frequency is derived from their two frequencies combined. This new node is added back into the queue. We continue this process until only one node remains. The resulting tree supplies our Huffman encoding.
 
 \subsection*{Java Implementation}
 
@@ -770,24 +782,24 @@ public class Prog5 {
 
 \subsection*{Sample Huffman Code}
 
-For character|frequency input:
+For character frequency input:
 
-a|8
-v|1
-z|1
-b|5
-c|6
-p|4
+a|8 \\
+v|1 \\
+z|1 \\
+b|5 \\
+c|6 \\
+p|4 \\
 e|10
 
 Our algorithm generates the Huffman code:
 
-c: 00
-a: 01
-e: 10
-b: 110
-v: 11100
-z: 11101
-p: 1111
+c: 00 \\
+a: 01 \\
+e: 10 \\
+b: 110 \\
+v: 11100 \\
+z: 11101 \\
+p: 1111 \\
 
 \end{document}
